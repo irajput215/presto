@@ -1,4 +1,5 @@
 import React from 'react';
+import { SlideThumbnail } from './SlideThumbnail';
 import type { Presentation } from '../types';
 
 interface PresentationCardProps {
@@ -20,8 +21,13 @@ export const PresentationCard: React.FC<PresentationCardProps> = ({ presentation
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
-          <div className="text-gray-400 text-xs font-medium tracking-wider uppercase">
-            No image
+          <div className="w-full h-full">
+            <SlideThumbnail
+              slide={presentation.slides[0]}
+              slideNumber={1}
+              defaultBackground={presentation.defaultBackground}
+              showLabel={false}
+            />
           </div>
         )}
       </div>

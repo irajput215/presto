@@ -11,6 +11,7 @@ import { TextModal, ImageModal, VideoModal, CodeModal } from '../components/Elem
 import type { BackgroundKind, BackgroundStyle, CodeElement, ImageElement, PresentationHistoryEntry, SlideElement, TextElement, VideoElement, CodeLanguage, CodeTheme } from '../types';
 
 type ModalType = 'text' | 'image' | 'video' | 'code' | null;
+type ThumbnailMode = 'auto' | 'url' | 'upload';
 
 /* ── SVG Icons ───────────────────────────────────────── */
 const IconText = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7V4h16v3" /><line x1="12" y1="4" x2="12" y2="20" /><line x1="8" y1="20" x2="16" y2="20" /></svg>;
@@ -209,6 +210,7 @@ export const EditPresentation: React.FC = () => {
   const [editName, setEditName] = useState('');
   const [editThumbnail, setEditThumbnail] = useState('');
   const [editDescription, setEditDescription] = useState('');
+  const [editThumbnailMode, setEditThumbnailMode] = useState<ThumbnailMode>('auto');
 
   // Sync slide number to URL
   useEffect(() => {
@@ -259,7 +261,7 @@ export const EditPresentation: React.FC = () => {
     try {
       await updatePresentation(presentation.id, {
         name: editName,
-        thumbnail: editThumbnail,
+        thumbnail: editThumbnailMode === 'auto' ? '' : editThumbnail,
         description: editDescription
       });
       setIsEditDetailsOpen(false);
@@ -319,7 +321,19 @@ export const EditPresentation: React.FC = () => {
     setEditName(presentation.name);
     setEditThumbnail(presentation.thumbnail);
     setEditDescription(presentation.description);
+    setEditThumbnailMode(presentation.thumbnail ? 'url' : 'auto');
     setIsEditDetailsOpen(true);
+  };
+
+  const handleEditThumbnailUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setEditThumbnail(reader.result as string);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSaveElement = async (el: SlideElement) => {
@@ -576,8 +590,67 @@ export const EditPresentation: React.FC = () => {
         <Modal title="Edit Presentation Details" onClose={() => setIsEditDetailsOpen(false)}>
           <form onSubmit={handleUpdateDetails} className="flex flex-col gap-4">
             <Input label="Title" value={editName} onChange={(e) => setEditName(e.target.value)} required />
-            <Input label="Thumbnail URL" value={editThumbnail} onChange={(e) => setEditThumbnail(e.target.value)} />
             <Input label="Description" value={editDescription} onChange={(e) => setEditDescription(e.target.value)} />
+            <div className="flex flex-col gap-2">
+              <span className="text-sm font-medium text-gray-700">Thumbnail</span>
+              <div className="grid grid-cols-3 gap-2">
+                {([
+                  ['auto', 'First slide'],
+                  ['url', 'Image URL'],
+                  ['upload', 'Upload'],
+                ] as const).map(([mode, label]) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => {
+                      setEditThumbnailMode(mode);
+                      setEditThumbnail(mode === 'auto' ? '' : editThumbnail);
+                    }}
+                    className={`rounded border px-2 py-2 text-xs font-semibold transition-colors ${
+                      editThumbnailMode === mode
+                        ? 'border-blue-600 bg-blue-50 text-blue-700'
+                        : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+
+              {editThumbnailMode === 'auto' && (
+                <p className="rounded bg-gray-50 px-3 py-2 text-xs text-gray-600">
+                  The dashboard card will use a live mini-preview of the first slide.
+                </p>
+              )}
+
+              {editThumbnailMode === 'url' && (
+                <Input
+                  label="Thumbnail URL"
+                  value={editThumbnail}
+                  onChange={(e) => setEditThumbnail(e.target.value)}
+                  placeholder="https://..."
+                />
+              )}
+
+              {editThumbnailMode === 'upload' && (
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-semibold text-gray-600">Thumbnail image file</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleEditThumbnailUpload}
+                    className="text-sm text-gray-500 file:mr-4 file:rounded file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
+                  />
+                  {editThumbnail && (
+                    <img
+                      src={editThumbnail}
+                      alt="Uploaded thumbnail preview"
+                      className="h-24 w-full rounded border border-gray-200 object-cover"
+                    />
+                  )}
+                </div>
+              )}
+            </div>
             <div className="flex gap-3 justify-end mt-4">
               <Button type="button" variant="secondary" onClick={() => setIsEditDetailsOpen(false)}>Cancel</Button>
               <Button type="submit">Save</Button>
