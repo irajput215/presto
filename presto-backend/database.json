@@ -52,8 +52,8 @@
                     "layer": 1,
                     "width": 30,
                     "height": 20,
-                    "x": 12.96296296296296,
-                    "y": 58.616804273919385,
+                    "x": 12.878787878787875,
+                    "y": 58.76650487272178,
                     "text": "Preview viewing\nEach slideshow deck should have a button somewhere (immediately visible or behind a panel) that users can click to preview the presentation\n\n\nPreviewing the presentation simply opens another tab in your browser where:\n\n\nThe slideshow deck is visible to the full size of the screen in your browser\n\n\nThe arrow controls and slide numbers are still visible and functional, clicking on the arrows should display the previous/next slide accordingly.\n\n\nEach block should have no border around it.",
                     "fontSize": 1.1,
                     "color": "#000000",
@@ -68,13 +68,13 @@
                     "width": 35,
                     "height": 25,
                     "x": 17.003367003367003,
-                    "y": 22.819815444390482,
+                    "y": 22.949685574260613,
                     "code": "print('hello')\n",
                     "language": "python",
-                    "fontSize": 1,
-                    "theme": "monokai",
-                    "showLineNumbers": false,
-                    "showFrame": false
+                    "fontSize": 1.3,
+                    "theme": "vs-dark",
+                    "showLineNumbers": true,
+                    "showFrame": true
                   },
                   {
                     "id": "1776288977697",
@@ -109,7 +109,7 @@
                 ]
               }
             ],
-            "updatedAt": 1776290821348,
+            "updatedAt": 1776292323315,
             "fontFamily": "Georgia, serif",
             "defaultBackground": {
               "kind": "solid",

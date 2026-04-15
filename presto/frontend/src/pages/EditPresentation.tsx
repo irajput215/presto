@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useStore } from '../context/StoreContext';
 import { useError } from '../context/ErrorContext';
 import { SlideCanvas } from '../components/SlideCanvas';
@@ -42,13 +42,13 @@ const SidebarTextFields = ({ el, onChange }: { el: TextElement; onChange: (u: Pa
         <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Align</label>
         <div className="flex gap-1">
           <button onClick={() => onChange({ textAlign: 'left' })} className={`flex-1 py-1.5 flex items-center justify-center border rounded transition-colors ${el.textAlign === 'left' || !el.textAlign ? 'bg-blue-600 border-blue-600 text-white shadow-sm' : 'bg-white hover:bg-gray-100 text-gray-600 border-gray-200'}`} title="Align Left">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="17" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="17" y1="10" x2="3" y2="10" /><line x1="21" y1="6" x2="3" y2="6" /><line x1="17" y1="14" x2="3" y2="14" /><line x1="21" y1="18" x2="3" y2="18" /></svg>
           </button>
           <button onClick={() => onChange({ textAlign: 'center' })} className={`flex-1 py-1.5 flex items-center justify-center border rounded transition-colors ${el.textAlign === 'center' ? 'bg-blue-600 border-blue-600 text-white shadow-sm' : 'bg-white hover:bg-gray-100 text-gray-600 border-gray-200'}`} title="Align Center">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="10" x2="6" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="18" y1="14" x2="6" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="10" x2="6" y2="10" /><line x1="21" y1="6" x2="3" y2="6" /><line x1="18" y1="14" x2="6" y2="14" /><line x1="21" y1="18" x2="3" y2="18" /></svg>
           </button>
           <button onClick={() => onChange({ textAlign: 'right' })} className={`flex-1 py-1.5 flex items-center justify-center border rounded transition-colors ${el.textAlign === 'right' ? 'bg-blue-600 border-blue-600 text-white shadow-sm' : 'bg-white hover:bg-gray-100 text-gray-600 border-gray-200'}`} title="Align Right">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="7" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="21" y1="10" x2="7" y2="10" /><line x1="21" y1="6" x2="3" y2="6" /><line x1="21" y1="14" x2="7" y2="14" /><line x1="21" y1="18" x2="3" y2="18" /></svg>
           </button>
         </div>
       </div>
@@ -64,7 +64,7 @@ const SidebarTextFields = ({ el, onChange }: { el: TextElement; onChange: (u: Pa
       </div>
 
       <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">Size (em)</label><input type="number" step="0.1" value={el.fontSize} onChange={e => onChange({ fontSize: Number(e.target.value) })} className="w-full px-1.5 py-1 text-xs border rounded outline-none" /></div>
-      
+
       <div className="grid grid-cols-2 gap-2">
         <div>
           <label className="block text-[10px] font-semibold text-gray-500 uppercase">Color</label>
@@ -104,7 +104,7 @@ const SidebarImageFields = ({ el, onChange }: { el: ImageElement; onChange: (u: 
       <div>
         <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Upload</label>
         <label className="flex items-center justify-center gap-1.5 w-full py-1.5 text-[10px] font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded cursor-pointer transition-colors">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
           Choose File
           <input type="file" accept="image/*,.gif" onChange={handleFile} className="hidden" />
         </label>
@@ -116,7 +116,7 @@ const SidebarImageFields = ({ el, onChange }: { el: ImageElement; onChange: (u: 
       <div>
         <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Rotate</label>
         <button onClick={handleRotate} className="w-full py-1.5 text-[10px] font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded flex items-center justify-center gap-1.5 transition-colors">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
           90° ({el.rotation || 0}°)
         </button>
       </div>
@@ -159,7 +159,7 @@ const SidebarCodeFields = ({ el, onChange }: { el: CodeElement; onChange: (u: Pa
             onClick={() => onChange({ showLineNumbers: !el.showLineNumbers })}
             className={`w-full py-1 text-[10px] font-bold border rounded flex items-center justify-center gap-1.5 transition-colors ${el.showLineNumbers ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white hover:bg-gray-100 text-gray-600 border-gray-200'}`}
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="9" x2="20" y2="9" /><line x1="4" y1="15" x2="20" y2="15" /><line x1="10" y1="3" x2="8" y2="21" /><line x1="16" y1="3" x2="14" y2="21" /></svg>
             {el.showLineNumbers ? 'ON' : 'OFF'}
           </button>
         </div>
@@ -169,7 +169,7 @@ const SidebarCodeFields = ({ el, onChange }: { el: CodeElement; onChange: (u: Pa
             onClick={() => onChange({ showFrame: !el.showFrame })}
             className={`w-full py-1 text-[10px] font-bold border rounded flex items-center justify-center gap-1.5 transition-colors ${el.showFrame ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white hover:bg-gray-100 text-gray-600 border-gray-200'}`}
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>
             {el.showFrame ? 'ON' : 'OFF'}
           </button>
         </div>
@@ -186,7 +186,9 @@ export const EditPresentation: React.FC = () => {
   const { showError } = useError();
 
   const presentation = presentations.find((p) => p.id === id);
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialSlide = Math.max(0, parseInt(searchParams.get('slide') || '1', 10) - 1);
+  const [currentSlide, setCurrentSlide] = useState(initialSlide);
 
   const [isEditDetailsOpen, setIsEditDetailsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -202,6 +204,11 @@ export const EditPresentation: React.FC = () => {
   const [editName, setEditName] = useState('');
   const [editThumbnail, setEditThumbnail] = useState('');
   const [editDescription, setEditDescription] = useState('');
+
+  // Sync slide number to URL
+  useEffect(() => {
+    setSearchParams({ slide: String(currentSlide + 1) }, { replace: true });
+  }, [currentSlide, setSearchParams]);
 
   const navigateSlide = useCallback((direction: 'next' | 'prev') => {
     if (!presentation) return;
@@ -377,14 +384,14 @@ export const EditPresentation: React.FC = () => {
                 className="p-1.5 text-gray-400 hover:text-blue-500 hover:bg-gray-100 rounded transition-colors"
                 title="Edit Title"
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>
               </button>
               <button
                 onClick={handleOpenDetailsModal}
                 className="p-1.5 text-gray-400 hover:text-blue-500 hover:bg-gray-100 rounded transition-colors"
                 title="Edit Thumbnail"
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>
               </button>
             </div>
           </div>
@@ -398,7 +405,7 @@ export const EditPresentation: React.FC = () => {
           </Button>
           <div className="h-6 w-px bg-gray-300" />
           <Button variant="secondary" onClick={() => window.open(`/presentation/${presentation.id}/preview`, '_blank')}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline mr-1"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline mr-1"><polygon points="5 3 19 12 5 21 5 3" /></svg>
             Preview
           </Button>
           <Button variant="danger" onClick={() => setIsDeleteOpen(true)}>
@@ -496,11 +503,11 @@ export const EditPresentation: React.FC = () => {
             className="absolute top-3 right-3 z-20 p-2 bg-white/80 hover:bg-white border border-gray-200 rounded-lg shadow-sm transition-colors backdrop-blur-sm"
             title="Slide Background & Theme"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/><circle cx="6.5" cy="12.5" r="0.5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r="0.5" fill="currentColor" /><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor" /><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor" /><circle cx="6.5" cy="12.5" r="0.5" fill="currentColor" /><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z" /></svg>
           </button>
 
           {/* Scrolling Canvas */}
-          <div className="w-full h-full overflow-hidden flex items-center justify-center p-2 bg-[#e8eaed]">
+          <div className="w-full h-full overflow-hidden">
             <SlideCanvas
               slide={activeSlideData}
               slideNumber={currentSlide + 1}
@@ -597,7 +604,7 @@ export const EditPresentation: React.FC = () => {
                 <div className="flex flex-col gap-2">
                   <input type="text" value={value} onChange={e => onChange({ kind: 'image', value: e.target.value })} placeholder="https://example.com/bg.jpg" className="w-full px-2 py-1.5 text-xs border rounded" />
                   <label className="flex items-center justify-center gap-1.5 w-full py-2 text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded cursor-pointer transition-colors">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
                     Upload Background Image
                     <input type="file" accept="image/*,.gif" className="hidden" onChange={e => {
                       const file = e.target.files?.[0];
@@ -613,8 +620,8 @@ export const EditPresentation: React.FC = () => {
               {/* Preview */}
               <div className="w-full h-12 rounded border border-gray-200 shadow-inner" style={
                 kind === 'solid' ? { backgroundColor: value } :
-                kind === 'gradient' ? { background: value } :
-                { backgroundImage: `url(${value})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                  kind === 'gradient' ? { background: value } :
+                    { backgroundImage: `url(${value})`, backgroundSize: 'cover', backgroundPosition: 'center' }
               } />
             </div>
           );

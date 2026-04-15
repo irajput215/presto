@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useStore } from '../context/StoreContext';
 import { SlideCanvas } from '../components/SlideCanvas';
 
@@ -8,7 +8,9 @@ export const PreviewPresentation: React.FC = () => {
   const { presentations } = useStore();
   const presentation = presentations.find((p) => p.id === id);
 
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialSlide = Math.max(0, parseInt(searchParams.get('slide') || '1', 10) - 1);
+  const [currentSlide, setCurrentSlide] = useState(initialSlide);
 
   const slideCount = presentation?.slides.length || 0;
   const isFirstSlide = currentSlide === 0;
@@ -32,6 +34,11 @@ export const PreviewPresentation: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKey);
   }, [navigateSlide]);
 
+  // Sync slide number to URL
+  useEffect(() => {
+    setSearchParams({ slide: String(currentSlide + 1) }, { replace: true });
+  }, [currentSlide, setSearchParams]);
+
   if (!presentation) {
     return (
       <div className="w-screen h-screen bg-black text-white flex items-center justify-center">
@@ -53,10 +60,10 @@ export const PreviewPresentation: React.FC = () => {
           isEditable={false}
           isPreview={true}
           defaultBackground={presentation.defaultBackground}
-          onSelectElement={() => {}}
-          onDoubleClickElement={() => {}}
-          onUpdateElement={() => {}}
-          onDeleteElement={() => {}}
+          onSelectElement={() => { }}
+          onDoubleClickElement={() => { }}
+          onUpdateElement={() => { }}
+          onDeleteElement={() => { }}
         />
       </div>
 

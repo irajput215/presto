@@ -48,7 +48,7 @@ export const SlideCanvas: React.FC<SlideCanvasProps> = ({
 
   return (
     <div
-      className={`relative w-full ${isPreview ? 'h-full' : 'aspect-[16/9]'} shadow-2xl rounded-sm ring-1 ring-black/5 flex items-center justify-center isolate overflow-hidden`}
+      className="relative w-full h-full shadow-2xl rounded-sm ring-1 ring-black/5 isolate overflow-hidden"
       style={bgStyle}
       onClick={handleCanvasClick}
     >
