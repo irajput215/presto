@@ -35,6 +35,7 @@ export const TextModal = ({ element, onClose, onSave }: { element?: TextElement,
   const [color, setColor] = useState(element?.color || '#000000');
   const [backgroundColor, setBackgroundColor] = useState(element?.backgroundColor || 'transparent');
   const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right'>(element?.textAlign || 'left');
+  const [fontFamily, setFontFamily] = useState(element?.fontFamily || 'Inter');
 
   const [width, setWidth] = useState(element?.width || 30);
   const [height, setHeight] = useState(element?.height || 20);
@@ -46,7 +47,7 @@ export const TextModal = ({ element, onClose, onSave }: { element?: TextElement,
       type: 'text',
       layer: element?.layer || 0,
       width, height, x: element?.x || 0, y: element?.y || 0,
-      text, fontSize, color, backgroundColor, textAlign
+      text, fontSize, color, backgroundColor, textAlign, fontFamily
     });
   };
 
@@ -65,6 +66,18 @@ export const TextModal = ({ element, onClose, onSave }: { element?: TextElement,
         <div className="flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-4">
             <Input label="Font Size (em)" type="number" step="0.1" value={fontSize} onChange={(e) => setFontSize(Number(e.target.value))} required />
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-700">Font Family</label>
+              <select value={fontFamily} onChange={(e) => setFontFamily(e.target.value)} className="h-10 px-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none text-sm" style={{ fontFamily }}>
+                <option value="Inter" style={{ fontFamily: 'Inter' }}>Inter</option>
+                <option value="Georgia" style={{ fontFamily: 'Georgia' }}>Georgia</option>
+                <option value="Courier New" style={{ fontFamily: 'Courier New' }}>Courier New</option>
+                <option value="Comic Sans MS" style={{ fontFamily: 'Comic Sans MS' }}>Comic Sans</option>
+                <option value="Times New Roman" style={{ fontFamily: 'Times New Roman' }}>Times New Roman</option>
+              </select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium text-gray-700">Alignment</label>
               <div className="flex gap-1 h-10">

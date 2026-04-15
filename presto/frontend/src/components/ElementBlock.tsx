@@ -9,6 +9,7 @@ interface ElementBlockProps {
   onDoubleClick: () => void;
   onUpdate: (updates: Partial<SlideElement>) => void;
   onDelete: () => void;
+  isPreview?: boolean;
 }
 
 export const ElementBlock: React.FC<ElementBlockProps> = ({
@@ -17,7 +18,8 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
   onSelect,
   onDoubleClick,
   onUpdate,
-  onDelete
+  onDelete,
+  isPreview = false
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -165,6 +167,7 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
               color: element.color,
               backgroundColor: element.backgroundColor || 'transparent',
               textAlign: element.textAlign || 'left',
+              fontFamily: element.fontFamily || 'Inter',
               width: '100%',
               height: '100%'
             }}
@@ -263,14 +266,15 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
   return (
     <div
       ref={containerRef}
-      onMouseDown={handleMouseDown}
-      onDoubleClick={(e) => {
+      onMouseDown={isPreview ? undefined : handleMouseDown}
+      onDoubleClick={isPreview ? undefined : (e) => {
         e.stopPropagation();
         onDoubleClick();
       }}
-      onContextMenu={handleContextMenu}
-      className={`absolute flex border border-gray-300 bg-white shadow-sm cursor-move group
-        ${isSelected ? 'ring-2 ring-blue-500' : 'hover:ring-1 hover:ring-gray-300'}
+      onContextMenu={isPreview ? undefined : handleContextMenu}
+      className={`absolute flex ${isPreview ? '' : 'border border-gray-300 bg-white shadow-sm cursor-move group'}
+        ${!isPreview && isSelected ? 'ring-2 ring-blue-500' : ''}
+        ${!isPreview && !isSelected ? 'hover:ring-1 hover:ring-gray-300' : ''}
       `}
       style={{
         left: `${localStyle.x}%`,
@@ -282,7 +286,7 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
     >
       {renderContent()}
 
-      {isSelected && (
+      {!isPreview && isSelected && (
         <>
           <div className="absolute top-0 left-0 w-2 h-2 bg-blue-500 cursor-nwse-resize -translate-x-1/2 -translate-y-1/2" onMouseDown={(e) => handleResizeDown(e, 'nw')} />
           <div className="absolute top-0 right-0 w-2 h-2 bg-blue-500 cursor-nesw-resize translate-x-1/2 -translate-y-1/2" onMouseDown={(e) => handleResizeDown(e, 'ne')} />

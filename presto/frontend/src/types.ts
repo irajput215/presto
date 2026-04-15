@@ -26,6 +26,7 @@ export type TextElement = {
   color: string;
   backgroundColor?: string;
   textAlign?: 'left' | 'center' | 'right';
+  fontFamily?: string;
 };
 
 export type ImageElement = {
@@ -127,6 +128,7 @@ export type ElementDraft =
     color: string;
     backgroundColor?: string;
     textAlign?: 'left' | 'center' | 'right';
+    fontFamily?: string;
   }
   | {
     type: 'image';

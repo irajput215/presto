@@ -7,7 +7,7 @@ import { Modal } from '../components/Modal';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { TextModal, ImageModal, VideoModal, CodeModal } from '../components/ElementModals';
-import type { CodeElement, ImageElement, SlideElement, TextElement, VideoElement, CodeLanguage, CodeTheme } from '../types';
+import type { BackgroundKind, BackgroundStyle, CodeElement, ImageElement, SlideElement, TextElement, VideoElement, CodeLanguage, CodeTheme } from '../types';
 
 type ModalType = 'text' | 'image' | 'video' | 'code' | null;
 
@@ -51,6 +51,16 @@ const SidebarTextFields = ({ el, onChange }: { el: TextElement; onChange: (u: Pa
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="7" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
           </button>
         </div>
+      </div>
+
+      <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">Font</label>
+        <select value={el.fontFamily || 'Inter'} onChange={e => onChange({ fontFamily: e.target.value })} className="w-full px-1 py-1 text-[11px] border rounded outline-none bg-white" style={{ fontFamily: el.fontFamily || 'Inter' }}>
+          <option value="Inter" style={{ fontFamily: 'Inter' }}>Inter</option>
+          <option value="Georgia" style={{ fontFamily: 'Georgia' }}>Georgia</option>
+          <option value="Courier New" style={{ fontFamily: 'Courier New' }}>Courier New</option>
+          <option value="Comic Sans MS" style={{ fontFamily: 'Comic Sans MS' }}>Comic Sans</option>
+          <option value="Times New Roman" style={{ fontFamily: 'Times New Roman' }}>Times New Roman</option>
+        </select>
       </div>
 
       <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">Size (em)</label><input type="number" step="0.1" value={el.fontSize} onChange={e => onChange({ fontSize: Number(e.target.value) })} className="w-full px-1.5 py-1 text-xs border rounded outline-none" /></div>
@@ -187,6 +197,7 @@ export const EditPresentation: React.FC = () => {
 
   const [isToolsOpen, setIsToolsOpen] = useState(true);
   const [isEditOpen, setIsEditOpen] = useState(true);
+  const [isBgModalOpen, setIsBgModalOpen] = useState(false);
 
   const [editName, setEditName] = useState('');
   const [editThumbnail, setEditThumbnail] = useState('');
@@ -386,6 +397,10 @@ export const EditPresentation: React.FC = () => {
             Delete Slide
           </Button>
           <div className="h-6 w-px bg-gray-300" />
+          <Button variant="secondary" onClick={() => window.open(`/presentation/${presentation.id}/preview`, '_blank')}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline mr-1"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Preview
+          </Button>
           <Button variant="danger" onClick={() => setIsDeleteOpen(true)}>
             Delete Presentation
           </Button>
@@ -475,12 +490,22 @@ export const EditPresentation: React.FC = () => {
             </div>
           )}
 
+          {/* Background/Theme Button */}
+          <button
+            onClick={() => setIsBgModalOpen(true)}
+            className="absolute top-3 right-3 z-20 p-2 bg-white/80 hover:bg-white border border-gray-200 rounded-lg shadow-sm transition-colors backdrop-blur-sm"
+            title="Slide Background & Theme"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/><circle cx="6.5" cy="12.5" r="0.5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z"/></svg>
+          </button>
+
           {/* Scrolling Canvas */}
           <div className="w-full h-full overflow-hidden flex items-center justify-center p-2 bg-[#e8eaed]">
             <SlideCanvas
               slide={activeSlideData}
               slideNumber={currentSlide + 1}
               selectedElementId={selectedElementId}
+              defaultBackground={presentation.defaultBackground}
               onSelectElement={(id) => {
                 setSelectedElementId(id);
                 if (id) setIsEditOpen(true);
@@ -522,6 +547,110 @@ export const EditPresentation: React.FC = () => {
       {activeModalType === 'image' && <ImageModal element={editingElement?.type === 'image' ? editingElement as ImageElement : undefined} onClose={() => { setActiveModalType(null); setEditingElement(null); }} onSave={handleSaveElement} />}
       {activeModalType === 'video' && <VideoModal element={editingElement?.type === 'video' ? editingElement as VideoElement : undefined} onClose={() => { setActiveModalType(null); setEditingElement(null); }} onSave={handleSaveElement} />}
       {activeModalType === 'code' && <CodeModal element={editingElement?.type === 'code' ? editingElement as CodeElement : undefined} onClose={() => { setActiveModalType(null); setEditingElement(null); }} onSave={handleSaveElement} />}
+
+      {isBgModalOpen && (() => {
+        const slideBg = activeSlideData.background;
+        const defBg = presentation.defaultBackground;
+
+        const BgEditor = ({ label, bg, onChange, onReset }: { label: string; bg: BackgroundStyle | null; onChange: (b: BackgroundStyle) => void; onReset?: () => void }) => {
+          const kind: BackgroundKind = bg?.kind || 'solid';
+          const value = bg?.value || '#ffffff';
+          return (
+            <div className="flex flex-col gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">{label}</span>
+                {onReset && <button type="button" onClick={onReset} className="text-[10px] text-blue-600 hover:text-blue-800 font-semibold">Reset to Default</button>}
+              </div>
+              <div className="flex gap-1">
+                {(['solid', 'gradient', 'image'] as const).map(k => (
+                  <button key={k} type="button" onClick={() => onChange({ kind: k, value: k === 'solid' ? '#ffffff' : k === 'gradient' ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : '' })} className={`flex-1 py-1.5 text-[10px] font-bold border rounded transition-colors ${kind === k ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white hover:bg-gray-100 text-gray-600 border-gray-200'}`}>
+                    {k.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+              {kind === 'solid' && (
+                <div className="flex gap-2 items-center">
+                  <input type="color" value={value} onChange={e => onChange({ kind: 'solid', value: e.target.value })} className="w-10 h-8 p-0.5 rounded cursor-pointer border" />
+                  <input type="text" value={value} onChange={e => onChange({ kind: 'solid', value: e.target.value })} className="flex-1 px-2 py-1 text-xs border rounded font-mono" />
+                </div>
+              )}
+              {kind === 'gradient' && (
+                <div className="flex flex-col gap-2">
+                  <div className="grid grid-cols-2 gap-1">
+                    {[
+                      'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                      'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                      'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+                      'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                      'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
+                      'linear-gradient(180deg, #0c0c0c 0%, #1a1a2e 100%)',
+                      'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+                    ].map((g, i) => (
+                      <button key={i} type="button" onClick={() => onChange({ kind: 'gradient', value: g })} className={`h-8 rounded border-2 transition-all ${value === g ? 'border-blue-500 ring-1 ring-blue-300' : 'border-transparent hover:border-gray-300'}`} style={{ background: g }} />
+                    ))}
+                  </div>
+                  <input type="text" value={value} onChange={e => onChange({ kind: 'gradient', value: e.target.value })} placeholder="linear-gradient(...)" className="w-full px-2 py-1 text-[10px] border rounded font-mono" />
+                </div>
+              )}
+              {kind === 'image' && (
+                <div className="flex flex-col gap-2">
+                  <input type="text" value={value} onChange={e => onChange({ kind: 'image', value: e.target.value })} placeholder="https://example.com/bg.jpg" className="w-full px-2 py-1.5 text-xs border rounded" />
+                  <label className="flex items-center justify-center gap-1.5 w-full py-2 text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded cursor-pointer transition-colors">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Upload Background Image
+                    <input type="file" accept="image/*,.gif" className="hidden" onChange={e => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => onChange({ kind: 'image', value: reader.result as string });
+                        reader.readAsDataURL(file);
+                      }
+                    }} />
+                  </label>
+                </div>
+              )}
+              {/* Preview */}
+              <div className="w-full h-12 rounded border border-gray-200 shadow-inner" style={
+                kind === 'solid' ? { backgroundColor: value } :
+                kind === 'gradient' ? { background: value } :
+                { backgroundImage: `url(${value})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+              } />
+            </div>
+          );
+        };
+
+        return (
+          <Modal title="Slide Background & Theme" onClose={() => setIsBgModalOpen(false)}>
+            <div className="flex flex-col gap-5">
+              <BgEditor
+                label="This Slide"
+                bg={slideBg}
+                onChange={async (bg) => {
+                  const newSlides = [...presentation.slides];
+                  newSlides[currentSlide] = { ...newSlides[currentSlide], background: bg };
+                  await updatePresentation(presentation.id, { slides: newSlides });
+                }}
+                onReset={slideBg ? async () => {
+                  const newSlides = [...presentation.slides];
+                  newSlides[currentSlide] = { ...newSlides[currentSlide], background: null };
+                  await updatePresentation(presentation.id, { slides: newSlides });
+                } : undefined}
+              />
+              <BgEditor
+                label="Default (All Slides)"
+                bg={defBg}
+                onChange={async (bg) => {
+                  await updatePresentation(presentation.id, { defaultBackground: bg });
+                }}
+              />
+              <div className="flex justify-end">
+                <Button variant="secondary" onClick={() => setIsBgModalOpen(false)}>Done</Button>
+              </div>
+            </div>
+          </Modal>
+        );
+      })()}
 
     </div>
   );

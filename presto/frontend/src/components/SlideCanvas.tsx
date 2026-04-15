@@ -1,6 +1,6 @@
 import React from 'react';
 import { ElementBlock } from './ElementBlock';
-import type { Slide, SlideElement } from '../types';
+import type { BackgroundStyle, Slide, SlideElement } from '../types';
 
 interface SlideCanvasProps {
   slide: Slide;
@@ -10,7 +10,9 @@ interface SlideCanvasProps {
   onUpdateElement: (id: string, updates: Partial<SlideElement>) => void;
   onDeleteElement: (id: string) => void;
   isEditable?: boolean;
+  isPreview?: boolean;
   slideNumber?: number;
+  defaultBackground?: BackgroundStyle;
 }
 
 export const SlideCanvas: React.FC<SlideCanvasProps> = ({
@@ -21,9 +23,11 @@ export const SlideCanvas: React.FC<SlideCanvasProps> = ({
   onUpdateElement,
   onDeleteElement,
   isEditable = true,
-  slideNumber
+  isPreview = false,
+  slideNumber,
+  defaultBackground
 }) => {
-  const bg = slide.background;
+  const bg = slide.background || defaultBackground || null;
   let bgStyle: React.CSSProperties = { backgroundColor: '#ffffff' };
 
   if (bg) {
@@ -44,11 +48,11 @@ export const SlideCanvas: React.FC<SlideCanvasProps> = ({
 
   return (
     <div
-      className="relative w-full h-full aspect-[16/9] shadow-2xl rounded-sm ring-1 ring-black/5 flex items-center justify-center isolate overflow-hidden"
+      className={`relative w-full ${isPreview ? 'h-full' : 'aspect-[16/9]'} shadow-2xl rounded-sm ring-1 ring-black/5 flex items-center justify-center isolate overflow-hidden`}
       style={bgStyle}
       onClick={handleCanvasClick}
     >
-      {slide.elements.length === 0 && (
+      {slide.elements.length === 0 && !isPreview && (
         <div className="absolute inset-0 flex items-center justify-center text-gray-400 font-medium pointer-events-none">
           (Empty Slide)
         </div>
@@ -59,6 +63,7 @@ export const SlideCanvas: React.FC<SlideCanvasProps> = ({
           key={element.id}
           element={element}
           isSelected={isEditable && selectedElementId === element.id}
+          isPreview={isPreview}
           onSelect={() => onSelectElement(element.id)}
           onDoubleClick={() => onDoubleClickElement(element)}
           onUpdate={(updates) => onUpdateElement(element.id, updates)}
