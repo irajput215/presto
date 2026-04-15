@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../context/StoreContext';
+import { useAuth } from '../context/AuthContext';
 import { PresentationCard } from '../components/PresentationCard';
 import { Modal } from '../components/Modal';
 import { Button } from '../components/Button';
@@ -10,6 +11,7 @@ type ThumbnailMode = 'auto' | 'url' | 'upload';
 
 export const Dashboard: React.FC = () => {
   const { presentations, isLoading, createPresentation } = useStore();
+  const { userName } = useAuth();
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -51,6 +53,9 @@ export const Dashboard: React.FC = () => {
     <div className="flex flex-col gap-8 w-full max-w-6xl mx-auto px-4 py-8">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
+          <p className="text-sm font-semibold text-blue-600 mb-1">
+            {userName ? `Welcome, ${userName}` : 'Welcome'}
+          </p>
           <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Presentations</h2>
           <p className="text-sm text-gray-500 mt-1">Manage all your slide decks</p>
         </div>

@@ -15,6 +15,26 @@
       "store": {
         "presentations": [
           {
+            "id": "8c41d0b2-e9cd-4170-91b4-77ec70434a39",
+            "name": "dekho",
+            "description": "dekho kese ",
+            "thumbnail": "",
+            "slides": [
+              {
+                "id": "154c8467-9391-4d93-9b30-d80649dade8b",
+                "background": null,
+                "elements": []
+              }
+            ],
+            "updatedAt": 1776294057173,
+            "fontFamily": "Georgia, serif",
+            "defaultBackground": {
+              "kind": "solid",
+              "value": "#ffffff"
+            },
+            "history": []
+          },
+          {
             "id": "8dd04120-c976-44b0-b62f-07d997f02983",
             "name": "im",
             "description": "image",

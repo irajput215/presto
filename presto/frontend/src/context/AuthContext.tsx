@@ -3,7 +3,8 @@ import type { ReactNode } from 'react';
 
 interface AuthContextType {
   token: string | null;
-  login: (token: string) => void;
+  userName: string | null;
+  login: (token: string, profile?: { name?: string; email?: string }) => void;
   logout: () => void;
 }
 
@@ -11,6 +12,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
+  const [userName, setUserName] = useState<string | null>(() => localStorage.getItem('userName'));
 
   useEffect(() => {
     if (token) {
@@ -20,16 +22,38 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, [token]);
 
-  const login = (newToken: string) => {
+  const login = (newToken: string, profile?: { name?: string; email?: string }) => {
+    const savedNames = JSON.parse(localStorage.getItem('userNamesByEmail') || '{}') as Record<string, string>;
+    const savedName = profile?.email ? savedNames[profile.email] : undefined;
+    const fallbackName = profile?.email ? profile.email.split('@')[0] : null;
+    const nextUserName = profile?.name || savedName || fallbackName;
+
     setToken(newToken);
+    setUserName(nextUserName);
+
+    if (profile?.email && profile?.name) {
+      localStorage.setItem('userNamesByEmail', JSON.stringify({
+        ...savedNames,
+        [profile.email]: profile.name,
+      }));
+    }
   };
 
   const logout = () => {
     setToken(null);
+    setUserName(null);
   };
 
+  useEffect(() => {
+    if (userName) {
+      localStorage.setItem('userName', userName);
+    } else {
+      localStorage.removeItem('userName');
+    }
+  }, [userName]);
+
   return (
-    <AuthContext.Provider value={{ token, login, logout }}>
+    <AuthContext.Provider value={{ token, userName, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -18,7 +18,7 @@ export const Login: React.FC = () => {
     try {
       const data = await apiCall('/admin/auth/login', 'POST', { email, password });
       clearErrors();
-      login(data.token);
+      login(data.token, { email });
       navigate('/dashboard');
     } catch (err: any) {
       showError(err.message);

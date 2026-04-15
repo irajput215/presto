@@ -26,7 +26,7 @@ export const Register: React.FC = () => {
     try {
       const data = await apiCall('/admin/auth/register', 'POST', { email, password, name });
       clearErrors();
-      login(data.token);
+      login(data.token, { name, email });
       navigate('/dashboard');
     } catch (err: any) {
       showError(err.message);
