@@ -3,33 +3,46 @@ import { Modal } from './Modal';
 import { Input } from './Input';
 import { Button } from './Button';
 import type { TextElement, ImageElement, VideoElement, CodeElement } from '../types';
+import { detectLanguage, languageNames } from '../lib/syntaxHighlight';
+
+type DimensionInputsProps = {
+  width: number;
+  setWidth: (value: number) => void;
+  height: number;
+  setHeight: (value: number) => void;
+  x: number;
+  setX: (value: number) => void;
+  y: number;
+  setY: (value: number) => void;
+  isEdit: boolean;
+};
 
 // Helper component for common size/position inputs
-const DimensionInputs = ({ 
-  width, setWidth, 
-  height, setHeight, 
-  x, setX, 
+const DimensionInputs = ({
+  width, setWidth,
+  height, setHeight,
+  x, setX,
   y, setY,
   isEdit
-}: any) => (
+}: DimensionInputsProps) => (
   <div className="grid grid-cols-2 gap-4 mt-2 p-3 bg-gray-50 rounded border border-gray-200">
     <div>
       <label className="block text-xs font-semibold text-gray-700 mb-1">Width (%)</label>
-      <input type="number" min="1" max="100" value={width} onChange={(e) => setWidth(Number(e.target.value))} className="w-full px-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm" required />
+      <input type="number" step="any" min="1" max="100" value={width} onChange={(e) => setWidth(Number(e.target.value))} className="w-full px-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm" required />
     </div>
     <div>
       <label className="block text-xs font-semibold text-gray-700 mb-1">Height (%)</label>
-      <input type="number" min="1" max="100" value={height} onChange={(e) => setHeight(Number(e.target.value))} className="w-full px-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm" required />
+      <input type="number" step="any" min="1" max="100" value={height} onChange={(e) => setHeight(Number(e.target.value))} className="w-full px-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm" required />
     </div>
     {isEdit && (
       <>
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1">X Position (%)</label>
-          <input type="number" min="0" max="100" value={x} onChange={(e) => setX(Number(e.target.value))} className="w-full px-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm" required />
+          <input type="number" step="any" min="0" max="100" value={x} onChange={(e) => setX(Number(e.target.value))} className="w-full px-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm" required />
         </div>
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1">Y Position (%)</label>
-          <input type="number" min="0" max="100" value={y} onChange={(e) => setY(Number(e.target.value))} className="w-full px-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm" required />
+          <input type="number" step="any" min="0" max="100" value={y} onChange={(e) => setY(Number(e.target.value))} className="w-full px-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm" required />
         </div>
       </>
     )}
@@ -40,7 +53,7 @@ export const TextModal = ({ element, onClose, onSave }: { element?: TextElement,
   const [text, setText] = useState(element?.text || '');
   const [fontSize, setFontSize] = useState(element?.fontSize || 1);
   const [color, setColor] = useState(element?.color || '#000000');
-  
+
   const [width, setWidth] = useState(element?.width || 30);
   const [height, setHeight] = useState(element?.height || 20);
   const [x, setX] = useState(element?.x || 0);
@@ -63,7 +76,7 @@ export const TextModal = ({ element, onClose, onSave }: { element?: TextElement,
         <DimensionInputs width={width} setWidth={setWidth} height={height} setHeight={setHeight} x={x} setX={setX} y={y} setY={setY} isEdit={!!element} />
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium text-gray-700">Text Content</label>
-          <textarea 
+          <textarea
             value={text} onChange={(e) => setText(e.target.value)} required
             className="w-full min-h-[100px] p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none resize-y text-sm"
             placeholder="Enter your text here..."
@@ -88,7 +101,7 @@ export const TextModal = ({ element, onClose, onSave }: { element?: TextElement,
 export const ImageModal = ({ element, onClose, onSave }: { element?: ImageElement, onClose: () => void, onSave: (el: ImageElement) => void }) => {
   const [src, setSrc] = useState(element?.src || '');
   const [alt, setAlt] = useState(element?.alt || '');
-  
+
   const [width, setWidth] = useState(element?.width || 30);
   const [height, setHeight] = useState(element?.height || 30);
   const [x, setX] = useState(element?.x || 0);
@@ -136,7 +149,7 @@ export const ImageModal = ({ element, onClose, onSave }: { element?: ImageElemen
 export const VideoModal = ({ element, onClose, onSave }: { element?: VideoElement, onClose: () => void, onSave: (el: VideoElement) => void }) => {
   const [src, setSrc] = useState(element?.src || '');
   const [autoplay, setAutoplay] = useState(element?.autoplay || false);
-  
+
   const [width, setWidth] = useState(element?.width || 40);
   const [height, setHeight] = useState(element?.height || 30);
   const [x, setX] = useState(element?.x || 0);
@@ -178,13 +191,13 @@ export const VideoModal = ({ element, onClose, onSave }: { element?: VideoElemen
 
 export const CodeModal = ({ element, onClose, onSave }: { element?: CodeElement, onClose: () => void, onSave: (el: CodeElement) => void }) => {
   const [code, setCode] = useState(element?.code || '');
-  const [language, setLanguage] = useState(element?.language || 'python');
   const [fontSize, setFontSize] = useState(element?.fontSize || 1);
-  
+
   const [width, setWidth] = useState(element?.width || 35);
   const [height, setHeight] = useState(element?.height || 25);
   const [x, setX] = useState(element?.x || 0);
   const [y, setY] = useState(element?.y || 0);
+  const detectedLanguage = code.trim() ? detectLanguage(code) : element?.language || 'javascript';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -193,30 +206,32 @@ export const CodeModal = ({ element, onClose, onSave }: { element?: CodeElement,
       type: 'code',
       layer: element?.layer || 0,
       width, height, x, y,
-      code, language: language as any, fontSize
+      code, language: detectedLanguage, fontSize
     });
   };
 
   return (
-    <Modal title={element ? "Edit Code" : "Add Code"} onClose={onClose}>
+    <Modal title={element ? "Edit Code Block" : "Add Code Block"} onClose={onClose}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <DimensionInputs width={width} setWidth={setWidth} height={height} setHeight={setHeight} x={x} setX={setX} y={y} setY={setY} isEdit={!!element} />
         <div className="flex gap-4">
           <div className="flex flex-col gap-1 w-full">
-            <label className="text-sm font-medium text-gray-700">Language</label>
-            <select value={language} onChange={(e) => setLanguage(e.target.value as any)} className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white">
-              <option value="python">Python</option>
-              <option value="javascript">JavaScript</option>
-              <option value="c">C</option>
-            </select>
+            <span className="text-sm font-medium text-gray-700">Detected Language</span>
+            <div className="px-3 py-2 border border-gray-300 rounded text-sm bg-gray-50 text-gray-800">
+              {languageNames[detectedLanguage]}
+            </div>
+            <p className="text-xs text-gray-500">
+              Language is detected automatically from the code. Supported: C, Python, JavaScript.
+            </p>
           </div>
           <Input label="Font Size (em)" type="number" step="0.1" value={fontSize} onChange={(e) => setFontSize(Number(e.target.value))} required />
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-gray-700">Code Source</label>
-          <textarea 
+          <label className="text-sm font-medium text-gray-700">Code</label>
+          <textarea
             value={code} onChange={(e) => setCode(e.target.value)} required
-            className="w-full min-h-[120px] p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none resize-y font-mono text-sm shadow-inner bg-gray-50"
+            className="w-full min-h-[140px] p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none resize-y font-mono text-sm shadow-inner bg-gray-50 whitespace-pre"
+            spellCheck={false}
             placeholder="def hello_world():&#10;  print('Hello')"
           />
         </div>

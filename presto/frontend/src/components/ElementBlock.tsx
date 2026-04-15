@@ -20,7 +20,7 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
   onDelete
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   const [localStyle, setLocalStyle] = useState({
     x: element.x,
     y: element.y,
@@ -33,6 +33,7 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
 
   useEffect(() => {
     if (!isDragging && !isResizing) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLocalStyle({
         x: element.x,
         y: element.y,
@@ -52,7 +53,7 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
       onSelect();
     }
     e.stopPropagation();
-    
+
     setIsDragging(true);
 
     const parent = containerRef.current?.parentElement;
@@ -111,8 +112,8 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
     const parentH = parent.clientHeight;
 
     const handleMouseMove = (moveEvent: globalThis.MouseEvent) => {
-      let dx = ((moveEvent.clientX - startX) / parentW) * 100;
-      let dy = ((moveEvent.clientY - startY) / parentH) * 100;
+      const dx = ((moveEvent.clientX - startX) / parentW) * 100;
+      const dy = ((moveEvent.clientY - startY) / parentH) * 100;
 
       let newX = startObjX;
       let newY = startObjY;
@@ -156,61 +157,71 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
 
   const renderContent = () => {
     switch (element.type) {
-      case 'text':
-        return (
-          <div 
-            style={{ fontSize: `${element.fontSize}em`, color: element.color }}
-            className="w-full h-full overflow-y-auto whitespace-pre-wrap break-words"
-          >
-            {element.text}
-          </div>
-        );
-      case 'image':
-        return (
-          <div className="w-full h-full overflow-hidden">
-            <img 
-              src={element.src} 
-              alt={element.alt} 
-              className="w-full h-full object-contain select-none pointer-events-none" 
-            />
-          </div>
-        );
-      case 'video':
-        const appendQuery = element.src.includes('?') ? '&autoplay=1&mute=1' : '?autoplay=1&mute=1';
-        return (
-          <div className="w-full h-full pointer-events-none overflow-hidden">
-             <iframe
-               src={`${element.src}${element.autoplay ? appendQuery : ''}`}
-               title="video"
-               allowFullScreen
-               className="w-full h-full border-0"
-               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-             />
-          </div>
-        );
-      case 'code':
-        return (
-          <div 
-            style={{ fontSize: `${element.fontSize}em` }}
-            className="w-full h-full overflow-auto bg-[#1e1e1e] p-2 pointer-events-none select-none"
-          >
-            <pre className="m-0 font-mono text-sm whitespace-pre-wrap break-words text-white">
-              {highlightCode(element.code, element.language).map((line, i) => (
-                <div key={i}>
-                  {line.map((segment, j) => {
-                    let color = '#d4d4d4'; // plain
-                    if (segment.kind === 'keyword') color = '#569cd6';
-                    if (segment.kind === 'string') color = '#ce9178';
-                    if (segment.kind === 'comment') color = '#6a9955';
-                    return <span key={j} style={{ color }}>{segment.value}</span>;
-                  })}
-                </div>
-              ))}
-            </pre>
-          </div>
-        );
-      default:
-        return null;
+    case 'text':
+      return (
+        <div
+          style={{ fontSize: `${element.fontSize}em`, color: element.color }}
+          className="w-full h-full overflow-y-auto whitespace-pre-wrap break-words"
+        >
+          {element.text}
+        </div>
+      );
+    case 'image':
+      return (
+        <div className="w-full h-full overflow-hidden flex items-center justify-center p-1 bg-gray-50 border border-gray-100 relative">
+          <img
+            src={element.src}
+            alt={element.alt}
+            className="w-full h-full object-contain select-none pointer-events-none"
+            onError={(e) => { 
+              e.currentTarget.style.display = 'none'; 
+              const span = e.currentTarget.nextElementSibling as HTMLElement;
+              if (span) span.style.display = 'block';
+            }}
+          />
+          <span className="text-gray-400 text-xs text-center break-words max-w-full truncate px-2 hidden" title={element.alt}>
+            {element.alt || 'Broken Image'}
+          </span>
+        </div>
+      );
+    case 'video': {
+      const appendQuery = element.src.includes('?') ? '&autoplay=1&mute=1' : '?autoplay=1&mute=1';
+      return (
+        <div className="w-full h-full overflow-hidden bg-gray-100 p-3 border border-gray-200">
+          <iframe
+            src={`${element.src}${element.autoplay ? appendQuery : ''}`}
+            title="video"
+            allowFullScreen
+            className="w-full h-full border-0 pointer-events-auto bg-black"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          />
+        </div>
+      );
+    }
+    case 'code':
+      return (
+        <div
+          style={{ fontSize: `${element.fontSize}em` }}
+          className="w-full h-full overflow-auto bg-[#1e1e1e] p-2 pointer-events-none select-none font-mono"
+        >
+          <pre className="m-0 whitespace-pre text-white leading-normal">
+            {highlightCode(element.code, element.language).map((line, i) => (
+              <div key={i}>
+                {line.map((segment, j) => {
+                  let color = '#d4d4d4'; // plain
+                  if (segment.kind === 'keyword') color = '#569cd6';
+                  if (segment.kind === 'string') color = '#ce9178';
+                  if (segment.kind === 'comment') color = '#6a9955';
+                  if (segment.kind === 'number') color = '#b5cea8';
+                  return <span key={j} style={{ color }}>{segment.value}</span>;
+                })}
+              </div>
+            ))}
+          </pre>
+        </div>
+      );
+    default:
+      return null;
     }
   };
 
