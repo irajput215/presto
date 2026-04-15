@@ -11,6 +11,7 @@ export const PreviewPresentation: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSlide = Math.max(0, parseInt(searchParams.get('slide') || '1', 10) - 1);
   const [currentSlide, setCurrentSlide] = useState(initialSlide);
+  const [transitionDirection, setTransitionDirection] = useState<'next' | 'prev'>('next');
 
   const slideCount = presentation?.slides.length || 0;
   const isFirstSlide = currentSlide === 0;
@@ -18,6 +19,7 @@ export const PreviewPresentation: React.FC = () => {
 
   const navigateSlide = useCallback((dir: 'prev' | 'next') => {
     setCurrentSlide((prev) => {
+      setTransitionDirection(dir);
       if (dir === 'prev' && prev > 0) return prev - 1;
       if (dir === 'next' && prev < slideCount - 1) return prev + 1;
       return prev;
@@ -53,18 +55,23 @@ export const PreviewPresentation: React.FC = () => {
     <div className="w-screen h-screen bg-black flex flex-col overflow-hidden select-none">
       {/* Full-screen slide */}
       <div className="flex-1 relative">
-        <SlideCanvas
-          slide={activeSlide}
-          slideNumber={currentSlide + 1}
-          selectedElementId={null}
-          isEditable={false}
-          isPreview={true}
-          defaultBackground={presentation.defaultBackground}
-          onSelectElement={() => { }}
-          onDoubleClickElement={() => { }}
-          onUpdateElement={() => { }}
-          onDeleteElement={() => { }}
-        />
+        <div
+          key={activeSlide.id}
+          className={`absolute inset-0 slide-transition-${transitionDirection}`}
+        >
+          <SlideCanvas
+            slide={activeSlide}
+            slideNumber={currentSlide + 1}
+            selectedElementId={null}
+            isEditable={false}
+            isPreview={true}
+            defaultBackground={presentation.defaultBackground}
+            onSelectElement={() => { }}
+            onDoubleClickElement={() => { }}
+            onUpdateElement={() => { }}
+            onDeleteElement={() => { }}
+          />
+        </div>
       </div>
 
       {/* Bottom bar with navigation */}

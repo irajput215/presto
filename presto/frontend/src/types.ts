@@ -81,6 +81,13 @@ export type Slide = {
   elements: SlideElement[];
 };
 
+export type PresentationHistoryEntry = {
+  id: string;
+  savedAt: number;
+  slides: Slide[];
+  defaultBackground: BackgroundStyle;
+};
+
 export type Presentation = {
   id: string;
   name: string;
@@ -90,6 +97,7 @@ export type Presentation = {
   updatedAt: number;
   fontFamily: string;
   defaultBackground: BackgroundStyle;
+  history?: PresentationHistoryEntry[];
 };
 
 export type UserAccount = {

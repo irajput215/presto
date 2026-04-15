@@ -24,6 +24,34 @@ const createEmptySlide = (): Slide => ({
   elements: [],
 });
 
+const HISTORY_INTERVAL_MS = 60 * 1000;
+
+const cloneSlides = (slides: Slide[]): Slide[] =>
+  JSON.parse(JSON.stringify(slides)) as Slide[];
+
+const withRevisionSnapshot = (presentation: Presentation): Presentation => {
+  const now = Date.now();
+  const history = presentation.history || [];
+  const latestSnapshot = history[0];
+
+  if (latestSnapshot && now - latestSnapshot.savedAt < HISTORY_INTERVAL_MS) {
+    return presentation;
+  }
+
+  return {
+    ...presentation,
+    history: [
+      {
+        id: uuidv4(),
+        savedAt: now,
+        slides: cloneSlides(presentation.slides),
+        defaultBackground: { ...presentation.defaultBackground },
+      },
+      ...history,
+    ],
+  };
+};
+
 export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [presentations, setPresentations] = useState<Presentation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -79,6 +107,7 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       updatedAt: Date.now(),
       fontFamily: 'Georgia, serif',
       defaultBackground: { kind: 'solid', value: '#ffffff' },
+      history: [],
     };
 
     const newPresentations = [newPresentation, ...presentations];
@@ -88,7 +117,7 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   const updatePresentation = async (id: string, updates: Partial<Presentation>) => {
     const newPresentations = presentations.map((p) =>
-      p.id === id ? { ...p, ...updates, updatedAt: Date.now() } : p
+      p.id === id ? { ...withRevisionSnapshot(p), ...updates, updatedAt: Date.now() } : p
     );
     await saveStore(newPresentations);
   };
@@ -101,10 +130,11 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const addElement = async (presentationId: string, slideId: string, element: SlideElement) => {
     const newPresentations = presentations.map(p => {
       if (p.id !== presentationId) return p;
+      const presentationWithHistory = withRevisionSnapshot(p);
       return {
-        ...p,
+        ...presentationWithHistory,
         updatedAt: Date.now(),
-        slides: p.slides.map(s => {
+        slides: presentationWithHistory.slides.map(s => {
           if (s.id !== slideId) return s;
           // Calculate next layer
           const nextLayer = s.elements.reduce((max, el) => Math.max(max, el.layer), 0) + 1;
@@ -119,10 +149,11 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const updateElement = async (presentationId: string, slideId: string, elementId: string, updates: Partial<SlideElement>) => {
     const newPresentations = presentations.map(p => {
       if (p.id !== presentationId) return p;
+      const presentationWithHistory = withRevisionSnapshot(p);
       return {
-        ...p,
+        ...presentationWithHistory,
         updatedAt: Date.now(),
-        slides: p.slides.map(s => {
+        slides: presentationWithHistory.slides.map(s => {
           if (s.id !== slideId) return s;
           return {
             ...s,
@@ -137,10 +168,11 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const deleteElement = async (presentationId: string, slideId: string, elementId: string) => {
     const newPresentations = presentations.map(p => {
       if (p.id !== presentationId) return p;
+      const presentationWithHistory = withRevisionSnapshot(p);
       return {
-        ...p,
+        ...presentationWithHistory,
         updatedAt: Date.now(),
-        slides: p.slides.map(s => {
+        slides: presentationWithHistory.slides.map(s => {
           if (s.id !== slideId) return s;
           return { ...s, elements: s.elements.filter(el => el.id !== elementId) };
         })

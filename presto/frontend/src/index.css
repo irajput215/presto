@@ -32,3 +32,33 @@ select {
   display: flex;
   flex-direction: column;
 }
+
+@keyframes slide-in-from-right {
+  from {
+    opacity: 0;
+    transform: translateX(4%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-from-left {
+  from {
+    opacity: 0;
+    transform: translateX(-4%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.slide-transition-next {
+  animation: slide-in-from-right 260ms ease-out;
+}
+
+.slide-transition-prev {
+  animation: slide-in-from-left 260ms ease-out;
+}

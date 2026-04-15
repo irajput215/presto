@@ -3,11 +3,12 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useStore } from '../context/StoreContext';
 import { useError } from '../context/ErrorContext';
 import { SlideCanvas } from '../components/SlideCanvas';
+import { SlideThumbnail } from '../components/SlideThumbnail';
 import { Modal } from '../components/Modal';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { TextModal, ImageModal, VideoModal, CodeModal } from '../components/ElementModals';
-import type { BackgroundKind, BackgroundStyle, CodeElement, ImageElement, SlideElement, TextElement, VideoElement, CodeLanguage, CodeTheme } from '../types';
+import type { BackgroundKind, BackgroundStyle, CodeElement, ImageElement, PresentationHistoryEntry, SlideElement, TextElement, VideoElement, CodeLanguage, CodeTheme } from '../types';
 
 type ModalType = 'text' | 'image' | 'video' | 'code' | null;
 
@@ -200,6 +201,10 @@ export const EditPresentation: React.FC = () => {
   const [isToolsOpen, setIsToolsOpen] = useState(true);
   const [isEditOpen, setIsEditOpen] = useState(true);
   const [isBgModalOpen, setIsBgModalOpen] = useState(false);
+  const [isSlidePanelOpen, setIsSlidePanelOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [draggedSlideIndex, setDraggedSlideIndex] = useState<number | null>(null);
+  const [dragOverSlideIndex, setDragOverSlideIndex] = useState<number | null>(null);
 
   const [editName, setEditName] = useState('');
   const [editThumbnail, setEditThumbnail] = useState('');
@@ -337,7 +342,7 @@ export const EditPresentation: React.FC = () => {
   const handleInlineUpdate = async (updates: Partial<SlideElement>) => {
     if (!selectedEl) return;
     try {
-      let finalUpdates = { ...updates } as any;
+      const finalUpdates = { ...updates } as Partial<SlideElement> & { src?: string };
       if (finalUpdates.src && finalUpdates.src.includes('watch?v=')) {
         finalUpdates.src = finalUpdates.src.replace('watch?v=', 'embed/');
       }
@@ -354,6 +359,41 @@ export const EditPresentation: React.FC = () => {
     await addElement(presentation.id, activeSlideData.id, clone);
     setSelectedElementId(clone.id);
   };
+
+  const moveSlide = async (fromIndex: number, toIndex: number) => {
+    if (fromIndex === toIndex || fromIndex < 0 || fromIndex >= slideCount) return;
+    const slides = [...presentation.slides];
+    const [movedSlide] = slides.splice(fromIndex, 1);
+    const adjustedToIndex = fromIndex < toIndex ? toIndex - 1 : toIndex;
+    slides.splice(adjustedToIndex, 0, movedSlide);
+    await updatePresentation(presentation.id, { slides });
+    setCurrentSlide(slides.findIndex(slide => slide.id === movedSlide.id));
+    setSelectedElementId(null);
+  };
+
+  const handleSlideDrop = async (dropIndex: number) => {
+    if (draggedSlideIndex === null) return;
+    await moveSlide(draggedSlideIndex, dropIndex);
+    setDraggedSlideIndex(null);
+    setDragOverSlideIndex(null);
+  };
+
+  const handleRestoreHistory = async (entry: PresentationHistoryEntry) => {
+    const restoredSlides = JSON.parse(JSON.stringify(entry.slides));
+    await updatePresentation(presentation.id, {
+      slides: restoredSlides,
+      defaultBackground: { ...entry.defaultBackground },
+    });
+    setCurrentSlide(0);
+    setSelectedElementId(null);
+    setIsHistoryOpen(false);
+  };
+
+  const formatHistoryTime = (timestamp: number) =>
+    new Intl.DateTimeFormat(undefined, {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    }).format(timestamp);
 
 
   return (
@@ -404,6 +444,12 @@ export const EditPresentation: React.FC = () => {
             Delete Slide
           </Button>
           <div className="h-6 w-px bg-gray-300" />
+          <Button variant="secondary" onClick={() => setIsSlidePanelOpen(true)}>
+            Slide panel
+          </Button>
+          <Button variant="secondary" onClick={() => setIsHistoryOpen(true)}>
+            Version history
+          </Button>
           <Button variant="secondary" onClick={() => window.open(`/presentation/${presentation.id}/preview`, '_blank')}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline mr-1"><polygon points="5 3 19 12 5 21 5 3" /></svg>
             Preview
@@ -554,6 +600,123 @@ export const EditPresentation: React.FC = () => {
       {activeModalType === 'image' && <ImageModal element={editingElement?.type === 'image' ? editingElement as ImageElement : undefined} onClose={() => { setActiveModalType(null); setEditingElement(null); }} onSave={handleSaveElement} />}
       {activeModalType === 'video' && <VideoModal element={editingElement?.type === 'video' ? editingElement as VideoElement : undefined} onClose={() => { setActiveModalType(null); setEditingElement(null); }} onSave={handleSaveElement} />}
       {activeModalType === 'code' && <CodeModal element={editingElement?.type === 'code' ? editingElement as CodeElement : undefined} onClose={() => { setActiveModalType(null); setEditingElement(null); }} onSave={handleSaveElement} />}
+
+      {isSlidePanelOpen && (
+        <Modal title="Slide Panel" onClose={() => setIsSlidePanelOpen(false)} maxWidthClassName="max-w-4xl">
+          <div className="max-h-[70vh] overflow-y-auto pr-1">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {presentation.slides.map((slide, index) => (
+                <div key={slide.id} className="flex flex-col gap-2">
+                  <div
+                    onDragEnter={() => setDragOverSlideIndex(index)}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setDragOverSlideIndex(index);
+                    }}
+                    onDrop={() => handleSlideDrop(index)}
+                    className={`flex h-8 items-center justify-center rounded border border-dashed text-[10px] font-semibold uppercase tracking-wide transition-colors ${
+                      draggedSlideIndex !== null
+                        ? dragOverSlideIndex === index
+                          ? 'border-blue-500 bg-blue-100 text-blue-700'
+                          : 'border-blue-200 bg-blue-50 text-blue-400'
+                        : 'border-transparent text-transparent'
+                    }`}
+                  >
+                    Drop here
+                  </div>
+                  <button
+                    type="button"
+                    draggable
+                    onDragStart={() => setDraggedSlideIndex(index)}
+                    onDragEnd={() => {
+                      setDraggedSlideIndex(null);
+                      setDragOverSlideIndex(null);
+                    }}
+                    onClick={() => {
+                      setCurrentSlide(index);
+                      setSelectedElementId(null);
+                      setIsSlidePanelOpen(false);
+                    }}
+                    className={`cursor-grab rounded border p-2 text-left transition-colors active:cursor-grabbing ${
+                      currentSlide === index
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    <SlideThumbnail
+                      slide={slide}
+                      slideNumber={index + 1}
+                      defaultBackground={presentation.defaultBackground}
+                    />
+                    <div className="mt-2 flex items-center justify-between text-xs">
+                      <span className="font-semibold text-gray-800">Slide {index + 1}</span>
+                      <span className="text-gray-500">{slide.elements.length} element{slide.elements.length === 1 ? '' : 's'}</span>
+                    </div>
+                  </button>
+                </div>
+              ))}
+              <div
+                onDragEnter={() => setDragOverSlideIndex(presentation.slides.length)}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setDragOverSlideIndex(presentation.slides.length);
+                }}
+                onDrop={() => handleSlideDrop(presentation.slides.length)}
+                className={`flex h-12 items-center justify-center rounded border border-dashed text-[10px] font-semibold uppercase tracking-wide transition-colors ${
+                  draggedSlideIndex !== null
+                    ? dragOverSlideIndex === presentation.slides.length
+                      ? 'border-blue-500 bg-blue-100 text-blue-700'
+                      : 'border-blue-200 bg-blue-50 text-blue-400'
+                    : 'border-transparent text-transparent'
+                }`}
+              >
+                Drop here
+              </div>
+            </div>
+          </div>
+          <p className="mt-3 text-xs text-gray-500">
+            Drag a slide preview and drop it between previews to rearrange the deck.
+          </p>
+        </Modal>
+      )}
+
+      {isHistoryOpen && (
+        <Modal title="Version History" onClose={() => setIsHistoryOpen(false)} maxWidthClassName="max-w-2xl">
+          <div className="flex max-h-[70vh] flex-col gap-3 overflow-y-auto">
+            {(presentation.history || []).length === 0 ? (
+              <p className="text-sm text-gray-500">
+                No revision snapshots yet. Presto records deck snapshots during edits, with at least one minute between saved history moments.
+              </p>
+            ) : (
+              (presentation.history || []).map((entry) => (
+                <div key={entry.id} className="rounded border border-gray-200 bg-gray-50 p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="text-sm font-semibold text-gray-900">{formatHistoryTime(entry.savedAt)}</div>
+                      <div className="mt-1 text-xs text-gray-500">
+                        {entry.slides.length} slide{entry.slides.length === 1 ? '' : 's'} saved
+                      </div>
+                    </div>
+                    <Button type="button" variant="secondary" onClick={() => handleRestoreHistory(entry)}>
+                      Restore
+                    </Button>
+                  </div>
+                  <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    {entry.slides.slice(0, 6).map((slide, index) => (
+                      <SlideThumbnail
+                        key={slide.id}
+                        slide={slide}
+                        slideNumber={index + 1}
+                        defaultBackground={entry.defaultBackground}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </Modal>
+      )}
 
       {isBgModalOpen && (() => {
         const slideBg = activeSlideData.background;
