@@ -6,17 +6,22 @@ import { SlideCanvas } from '../components/SlideCanvas';
 import { Modal } from '../components/Modal';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
+import { TextModal, ImageModal, VideoModal, CodeModal } from '../components/ElementModals';
 import type { CodeElement, ImageElement, SlideElement, TextElement, VideoElement, CodeLanguage } from '../types';
+
+type ModalType = 'text' | 'image' | 'video' | 'code' | null;
 
 /* ── SVG Icons ───────────────────────────────────────── */
 const IconText = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7V4h16v3" /><line x1="12" y1="4" x2="12" y2="20" /><line x1="8" y1="20" x2="16" y2="20" /></svg>;
 const IconImage = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="m21 15-5-5L5 21" /></svg>;
 const IconVideo = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7" /><rect x="1" y="5" width="15" height="14" rx="2" /></svg>;
 const IconCode = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>;
+const IconPanel = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><line x1="9" y1="3" x2="9" y2="21" /></svg>;
+const IconSliders = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="21" x2="4" y2="14" /><line x1="4" y1="10" x2="4" y2="3" /><line x1="12" y1="21" x2="12" y2="12" /><line x1="12" y1="8" x2="12" y2="3" /><line x1="20" y1="21" x2="20" y2="16" /><line x1="20" y1="12" x2="20" y2="3" /><line x1="1" y1="14" x2="7" y2="14" /><line x1="9" y1="8" x2="15" y2="8" /><line x1="17" y1="16" x2="23" y2="16" /></svg>;
 
 /* ── Inline Editor Forms ─────────────────────────────── */
 const SidebarDimensions = ({ el, onChange }: { el: SlideElement; onChange: (u: Partial<SlideElement>) => void }) => {
-  const field = (lbl: string, key: 'width'|'height'|'x'|'y', min: number) => (
+  const field = (lbl: string, key: 'width' | 'height' | 'x' | 'y', min: number) => (
     <div>
       <label className="block text-[9px] font-bold text-gray-500 uppercase">{lbl}</label>
       <input type="number" step="1" min={min} max="100" value={Math.floor(el[key])} onChange={e => onChange({ [key]: Number(e.target.value) })} className="w-full px-1.5 py-1 text-xs border rounded outline-none" />
@@ -62,12 +67,12 @@ const SidebarCodeFields = ({ el, onChange }: { el: CodeElement; onChange: (u: Pa
     <div className="flex flex-col gap-3 mt-4">
       <div className="flex flex-col gap-3">
         <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">Language</label>
-        <select value={el.language} onChange={e => onChange({ language: e.target.value as CodeLanguage })} className="w-full px-1 py-1 text-[11px] border rounded outline-none bg-white">
-          <option value="javascript">JavaScript</option>
-          <option value="python">Python</option>
-          <option value="c">C</option>
-          <option value="latex">LaTeX</option>
-        </select>
+          <select value={el.language} onChange={e => onChange({ language: e.target.value as CodeLanguage })} className="w-full px-1 py-1 text-[11px] border rounded outline-none bg-white">
+            <option value="javascript">JavaScript</option>
+            <option value="python">Python</option>
+            <option value="c">C</option>
+            <option value="latex">LaTeX</option>
+          </select>
         </div>
         <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">Size</label><input type="number" step="0.1" value={el.fontSize} onChange={e => onChange({ fontSize: Number(e.target.value) })} className="w-full px-1.5 py-1 text-[11px] border rounded" /></div>
       </div>
@@ -87,7 +92,13 @@ export const EditPresentation: React.FC = () => {
 
   const [isEditDetailsOpen, setIsEditDetailsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
+  const [activeModalType, setActiveModalType] = useState<ModalType>(null);
+  const [editingElement, setEditingElement] = useState<SlideElement | null>(null);
+
+  const [isToolsOpen, setIsToolsOpen] = useState(true);
+  const [isEditOpen, setIsEditOpen] = useState(true);
 
   const [editName, setEditName] = useState('');
   const [editThumbnail, setEditThumbnail] = useState('');
@@ -200,18 +211,20 @@ export const EditPresentation: React.FC = () => {
     setIsEditDetailsOpen(true);
   };
 
-  const handleAddElementFlow = async (type: string) => {
-    let base: any = { id: Date.now().toString(), type, layer: 0, x: 0, y: 0 };
-    if (type === 'text') { base = { ...base, width: 30, height: 20, text: 'New Text', fontSize: 1.5, color: '#000000' }; }
-    else if (type === 'image') { base = { ...base, width: 30, height: 30, src: '', alt: 'Image' }; }
-    else if (type === 'video') { base = { ...base, width: 40, height: 30, src: 'https://www.youtube.com/embed/dQw4w9WgXcQ', autoplay: false }; }
-    else if (type === 'code') { base = { ...base, width: 35, height: 25, code: 'print("Hello")', language: 'python', fontSize: 1 }; }
-
+  const handleSaveElement = async (el: SlideElement) => {
     try {
-      await addElement(presentation.id, activeSlideData.id, base);
-      setSelectedElementId(base.id);
+      if (editingElement) {
+        await updateElement(presentation.id, activeSlideData.id, el.id, el);
+      } else {
+        const highestLayer = activeSlideData.elements.reduce((max, e) => Math.max(max, e.layer || 0), 0);
+        const newLayer = activeSlideData.elements.length > 0 ? highestLayer + 1 : 0;
+        await addElement(presentation.id, activeSlideData.id, { ...el, layer: newLayer });
+        setSelectedElementId(el.id);
+      }
+      setActiveModalType(null);
+      setEditingElement(null);
     } catch {
-      showError("Failed to add element");
+      showError("Failed to save element");
     }
   };
 
@@ -230,7 +243,8 @@ export const EditPresentation: React.FC = () => {
 
   const handleDuplicate = async () => {
     if (!selectedEl) return;
-    const clone = { ...selectedEl, id: Date.now().toString(), x: Math.min(selectedEl.x + 5, 95), y: Math.min(selectedEl.y + 5, 95) };
+    const highestLayer = activeSlideData.elements.reduce((max, el) => Math.max(max, el.layer || 0), 0);
+    const clone = { ...selectedEl, id: Date.now().toString(), x: Math.min(selectedEl.x + 5, 95), y: Math.min(selectedEl.y + 5, 95), layer: highestLayer + 1 };
     await addElement(presentation.id, activeSlideData.id, clone);
     setSelectedElementId(clone.id);
   };
@@ -238,25 +252,43 @@ export const EditPresentation: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen w-full bg-gray-50 overflow-hidden">
-      
+
       {/* ── UNTOUCHED TOP BAR ───────────────────────── */}
       <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 shrink-0">
         <div className="flex items-center gap-4">
           <Button variant="secondary" onClick={() => navigate('/dashboard')}>
             Back
           </Button>
+          <div className="flex gap-2">
+            <button onClick={() => setIsToolsOpen(!isToolsOpen)} className={`p-1.5 rounded transition-colors ${isToolsOpen ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`} title="Toggle Tool Panel">
+              <IconPanel />
+            </button>
+            <button onClick={() => setIsEditOpen(!isEditOpen)} className={`p-1.5 rounded transition-colors ${isEditOpen ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`} title="Toggle Edit Panel">
+              <IconSliders />
+            </button>
+          </div>
           <div className="h-6 w-px bg-gray-300" />
-          <div className="flex flex-col">
+          <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold text-gray-900 leading-tight truncate max-w-md">
               {presentation.name}
             </h1>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={handleOpenDetailsModal}
+                className="p-1.5 text-gray-400 hover:text-blue-500 hover:bg-gray-100 rounded transition-colors"
+                title="Edit Title"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              </button>
+              <button
+                onClick={handleOpenDetailsModal}
+                className="p-1.5 text-gray-400 hover:text-blue-500 hover:bg-gray-100 rounded transition-colors"
+                title="Edit Thumbnail"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </button>
+            </div>
           </div>
-          <button
-            onClick={handleOpenDetailsModal}
-            className="text-[10px] font-bold text-gray-500 hover:text-black uppercase tracking-wider bg-gray-100 px-2 py-1 rounded"
-          >
-            Edit Title/Thumbnail
-          </button>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="secondary" onClick={handleAddSlide}>
@@ -271,59 +303,63 @@ export const EditPresentation: React.FC = () => {
           </Button>
         </div>
       </header>
-      
+
       {/* ── LOWER SECTION ───────────────────────────── */}
       <div className="flex-1 flex overflow-hidden">
-        
+
         {/* 1. Thin Left Icon Bar (Add Element Bar only) */}
-        <div className="w-14 bg-white border-r border-gray-200 flex flex-col items-center py-4 z-30 shrink-0 gap-3">
-          <button title="Add Text" onClick={() => handleAddElementFlow('text')} className="w-10 h-10 flex items-center justify-center rounded text-blue-600 hover:bg-blue-50 transition-colors"><IconText /></button>
-          <button title="Add Image" onClick={() => handleAddElementFlow('image')} className="w-10 h-10 flex items-center justify-center rounded text-green-600 hover:bg-green-50 transition-colors"><IconImage /></button>
-          <button title="Add Video" onClick={() => handleAddElementFlow('video')} className="w-10 h-10 flex items-center justify-center rounded text-purple-600 hover:bg-purple-50 transition-colors"><IconVideo /></button>
-          <button title="Add Code" onClick={() => handleAddElementFlow('code')} className="w-10 h-10 flex items-center justify-center rounded text-orange-600 hover:bg-orange-50 transition-colors"><IconCode /></button>
-        </div>
+        {isToolsOpen && (
+          <div className="w-14 bg-white border-r border-gray-200 flex flex-col items-center py-4 z-30 shrink-0 gap-3 transition-all duration-300">
+            <button title="Add Text" onClick={() => { setActiveModalType('text'); setEditingElement(null); }} className="w-10 h-10 flex items-center justify-center rounded text-blue-600 hover:bg-blue-50 transition-colors"><IconText /></button>
+            <button title="Add Image" onClick={() => { setActiveModalType('image'); setEditingElement(null); }} className="w-10 h-10 flex items-center justify-center rounded text-green-600 hover:bg-green-50 transition-colors"><IconImage /></button>
+            <button title="Add Video" onClick={() => { setActiveModalType('video'); setEditingElement(null); }} className="w-10 h-10 flex items-center justify-center rounded text-purple-600 hover:bg-purple-50 transition-colors"><IconVideo /></button>
+            <button title="Add Code" onClick={() => { setActiveModalType('code'); setEditingElement(null); }} className="w-10 h-10 flex items-center justify-center rounded text-orange-600 hover:bg-orange-50 transition-colors"><IconCode /></button>
+          </div>
+        )}
 
         {/* 2. Thin Edit Side Bar (Inline Edit Bar next to Icon Bar) */}
-        <div className="w-[180px] bg-[#fafafa] border-r border-gray-200 flex flex-col z-20 shrink-0 shadow-[2px_0_10px_rgba(0,0,0,0.02)] overflow-y-auto">
-          {selectedEl ? (
-            <div className="flex flex-col h-full">
-              <div className="flex items-center justify-between px-3 py-2.5 bg-white border-b border-gray-200 sticky top-0 z-10">
-                <span className="text-[11px] font-bold text-gray-800 uppercase tracking-wider flex items-center gap-1.5">
-                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                  {selectedEl.type}
-                </span>
-                <button onClick={() => setSelectedElementId(null)} className="text-gray-400 hover:text-black">✖</button>
-              </div>
+        {isEditOpen && (
+          <div className="w-[180px] bg-[#fafafa] border-r border-gray-200 flex flex-col z-20 shrink-0 shadow-[2px_0_10px_rgba(0,0,0,0.02)] overflow-y-auto transition-all duration-300">
+            {selectedEl ? (
+              <div className="flex flex-col h-full">
+                <div className="flex items-center justify-between px-3 py-2.5 bg-white border-b border-gray-200 sticky top-0 z-10">
+                  <span className="text-[11px] font-bold text-gray-800 uppercase tracking-wider flex items-center gap-1.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                    {selectedEl.type}
+                  </span>
+                  <button onClick={() => setSelectedElementId(null)} className="text-gray-400 hover:text-black">✖</button>
+                </div>
 
-              <div className="p-3 flex-1 overflow-y-auto">
-                <SidebarDimensions el={selectedEl} onChange={handleInlineUpdate} />
-                <div className="w-full h-px bg-gray-200 my-4" />
-                {selectedEl.type === 'text' && <SidebarTextFields el={selectedEl} onChange={handleInlineUpdate} />}
-                {selectedEl.type === 'image' && <SidebarImageFields el={selectedEl} onChange={handleInlineUpdate} />}
-                {selectedEl.type === 'video' && <SidebarVideoFields el={selectedEl} onChange={handleInlineUpdate} />}
-                {selectedEl.type === 'code' && <SidebarCodeFields el={selectedEl} onChange={handleInlineUpdate} />}
-              </div>
+                <div className="p-3 flex-1 overflow-y-auto">
+                  <SidebarDimensions el={selectedEl} onChange={handleInlineUpdate} />
+                  <div className="w-full h-px bg-gray-200 my-4" />
+                  {selectedEl.type === 'text' && <SidebarTextFields el={selectedEl} onChange={handleInlineUpdate} />}
+                  {selectedEl.type === 'image' && <SidebarImageFields el={selectedEl} onChange={handleInlineUpdate} />}
+                  {selectedEl.type === 'video' && <SidebarVideoFields el={selectedEl} onChange={handleInlineUpdate} />}
+                  {selectedEl.type === 'code' && <SidebarCodeFields el={selectedEl} onChange={handleInlineUpdate} />}
+                </div>
 
-              <div className="p-3 bg-white border-t border-gray-200 mt-auto flex flex-col gap-2">
-                <button onClick={handleDuplicate} className="w-full py-1 text-[9px] font-bold text-white bg-black hover:bg-gray-800 rounded shadow-sm">
-                  Duplicate
-                </button>
-                <button onClick={() => { deleteElement(presentation.id, activeSlideData.id, selectedEl.id); setSelectedElementId(null); }} className="w-full py-1 text-[9px] font-bold text-white bg-red-600 hover:bg-red-700 rounded shadow-sm">
-                  Delete
-                </button>
+                <div className="p-3 bg-white border-t border-gray-200 mt-auto flex flex-col gap-2">
+                  <button onClick={handleDuplicate} className="w-full py-1 text-[9px] font-bold text-white bg-black hover:bg-gray-800 rounded shadow-sm">
+                    Duplicate
+                  </button>
+                  <button onClick={() => { deleteElement(presentation.id, activeSlideData.id, selectedEl.id); setSelectedElementId(null); }} className="w-full py-1 text-[9px] font-bold text-white bg-red-600 hover:bg-red-700 rounded shadow-sm">
+                    Delete
+                  </button>
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="flex-1 flex flex-col items-center justify-center px-4 text-center text-gray-400 bg-[#fafafa]">
-               <div className="w-12 h-12 mb-3 rounded-full bg-gray-100 flex items-center justify-center">
-                 <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
-                 </svg>
-               </div>
-               <p className="text-[11px] text-gray-500 leading-relaxed font-medium">Select any element on the canvas to visually edit its properties here.</p>
-            </div>
-          )}
-        </div>
+            ) : (
+              <div className="flex-1 flex flex-col items-center justify-center px-4 text-center text-gray-400 bg-[#fafafa]">
+                <div className="w-12 h-12 mb-3 rounded-full bg-gray-100 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                  </svg>
+                </div>
+                <p className="text-[11px] text-gray-500 leading-relaxed font-medium">Select any element on the canvas to visually edit its properties here.</p>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* 3. Massive Canvas Area */}
         <div className="flex-1 bg-gray-100 relative flex flex-col overflow-hidden">
@@ -357,8 +393,11 @@ export const EditPresentation: React.FC = () => {
               slide={activeSlideData}
               slideNumber={currentSlide + 1}
               selectedElementId={selectedElementId}
-              onSelectElement={setSelectedElementId}
-              onDoubleClickElement={() => {}}
+              onSelectElement={(id) => {
+                setSelectedElementId(id);
+                if (id) setIsEditOpen(true);
+              }}
+              onDoubleClickElement={(el) => { setActiveModalType(el.type as ModalType); setEditingElement(el); }}
               onUpdateElement={(id, updates) => updateElement(presentation.id, activeSlideData.id, id, updates)}
               onDeleteElement={(id) => deleteElement(presentation.id, activeSlideData.id, id)}
             />
@@ -390,6 +429,11 @@ export const EditPresentation: React.FC = () => {
           </div>
         </Modal>
       )}
+
+      {activeModalType === 'text' && <TextModal element={editingElement?.type === 'text' ? editingElement as TextElement : undefined} onClose={() => { setActiveModalType(null); setEditingElement(null); }} onSave={handleSaveElement} />}
+      {activeModalType === 'image' && <ImageModal element={editingElement?.type === 'image' ? editingElement as ImageElement : undefined} onClose={() => { setActiveModalType(null); setEditingElement(null); }} onSave={handleSaveElement} />}
+      {activeModalType === 'video' && <VideoModal element={editingElement?.type === 'video' ? editingElement as VideoElement : undefined} onClose={() => { setActiveModalType(null); setEditingElement(null); }} onSave={handleSaveElement} />}
+      {activeModalType === 'code' && <CodeModal element={editingElement?.type === 'code' ? editingElement as CodeElement : undefined} onClose={() => { setActiveModalType(null); setEditingElement(null); }} onSave={handleSaveElement} />}
 
     </div>
   );

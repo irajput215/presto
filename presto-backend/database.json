@@ -44,28 +44,28 @@
                 "background": null,
                 "elements": [
                   {
-                    "id": "1776284250680-title",
+                    "id": "1776287649570",
                     "type": "text",
-                    "x": 20,
-                    "y": 5,
-                    "width": 60,
-                    "height": 15,
-                    "layer": 0,
-                    "text": "Title Text",
-                    "fontSize": 3,
+                    "layer": 1,
+                    "width": 30,
+                    "height": 20,
+                    "x": 13.047138047138045,
+                    "y": 58.47887323943662,
+                    "text": "Yo hi ",
+                    "fontSize": 2,
                     "color": "#000000"
                   },
                   {
-                    "id": "1776285330287",
+                    "id": "1776287674728",
                     "type": "code",
-                    "layer": 1,
-                    "x": 20.306859205776174,
-                    "y": 25.93103448275862,
-                    "width": 26.3501805054152,
-                    "height": 11.4137931034483,
-                    "code": "print('hello')",
+                    "layer": 2,
+                    "width": 35,
+                    "height": 25,
+                    "x": 16.835016835016837,
+                    "y": 22.95774647887324,
+                    "code": "print('hello')\n",
                     "language": "python",
-                    "fontSize": 1.8
+                    "fontSize": 1
                   }
                 ]
               },
@@ -124,7 +124,7 @@
                 ]
               }
             ],
-            "updatedAt": 1776286243548,
+            "updatedAt": 1776288200478,
             "fontFamily": "Georgia, serif",
             "defaultBackground": {
               "kind": "solid",
