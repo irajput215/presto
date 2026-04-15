@@ -7,7 +7,7 @@ import { Modal } from '../components/Modal';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { TextModal, ImageModal, VideoModal, CodeModal } from '../components/ElementModals';
-import type { CodeElement, ImageElement, SlideElement, TextElement, VideoElement, CodeLanguage } from '../types';
+import type { CodeElement, ImageElement, SlideElement, TextElement, VideoElement, CodeLanguage, CodeTheme } from '../types';
 
 type ModalType = 'text' | 'image' | 'video' | 'code' | null;
 
@@ -38,19 +38,78 @@ const SidebarTextFields = ({ el, onChange }: { el: TextElement; onChange: (u: Pa
   <div className="flex flex-col gap-3 mt-4">
     <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">Text</label><textarea value={el.text} onChange={e => onChange({ text: e.target.value })} className="w-full min-h-[60px] p-1.5 text-xs border rounded outline-none resize-y" /></div>
     <div className="flex flex-col gap-3">
+      <div>
+        <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Align</label>
+        <div className="flex gap-1">
+          <button onClick={() => onChange({ textAlign: 'left' })} className={`flex-1 py-1.5 flex items-center justify-center border rounded transition-colors ${el.textAlign === 'left' || !el.textAlign ? 'bg-blue-600 border-blue-600 text-white shadow-sm' : 'bg-white hover:bg-gray-100 text-gray-600 border-gray-200'}`} title="Align Left">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="17" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
+          </button>
+          <button onClick={() => onChange({ textAlign: 'center' })} className={`flex-1 py-1.5 flex items-center justify-center border rounded transition-colors ${el.textAlign === 'center' ? 'bg-blue-600 border-blue-600 text-white shadow-sm' : 'bg-white hover:bg-gray-100 text-gray-600 border-gray-200'}`} title="Align Center">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="10" x2="6" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="18" y1="14" x2="6" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
+          </button>
+          <button onClick={() => onChange({ textAlign: 'right' })} className={`flex-1 py-1.5 flex items-center justify-center border rounded transition-colors ${el.textAlign === 'right' ? 'bg-blue-600 border-blue-600 text-white shadow-sm' : 'bg-white hover:bg-gray-100 text-gray-600 border-gray-200'}`} title="Align Right">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="7" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+
       <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">Size (em)</label><input type="number" step="0.1" value={el.fontSize} onChange={e => onChange({ fontSize: Number(e.target.value) })} className="w-full px-1.5 py-1 text-xs border rounded outline-none" /></div>
-      <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">Color</label><input type="color" value={el.color} onChange={e => onChange({ color: e.target.value })} className="w-full h-6 p-0.5 rounded cursor-pointer border" /></div>
+      
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <label className="block text-[10px] font-semibold text-gray-500 uppercase">Color</label>
+          <input type="color" value={el.color} onChange={e => onChange({ color: e.target.value })} className="w-full h-7 p-0.5 rounded cursor-pointer border shadow-sm" />
+          <input type="text" value={el.color} onChange={e => onChange({ color: e.target.value })} className="w-full mt-1 px-1 py-0.5 text-[9px] border rounded font-mono text-center focus:border-blue-400 outline-none" />
+        </div>
+        <div>
+          <label className="block text-[10px] font-semibold text-gray-500 uppercase">Bg Color</label>
+          <input type="color" value={el.backgroundColor || '#ffffff'} onChange={e => onChange({ backgroundColor: e.target.value })} className="w-full h-7 p-0.5 rounded cursor-pointer border shadow-sm" />
+          <input type="text" value={el.backgroundColor || 'transparent'} onChange={e => onChange({ backgroundColor: e.target.value })} className="w-full mt-1 px-1 py-0.5 text-[9px] border rounded font-mono text-center focus:border-blue-400 outline-none" />
+        </div>
+      </div>
     </div>
   </div>
 );
 
 const SidebarImageFields = ({ el, onChange }: { el: ImageElement; onChange: (u: Partial<ImageElement>) => void }) => {
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onloadend = () => onChange({ src: reader.result as string }); reader.readAsDataURL(file); } };
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => onChange({ src: reader.result as string });
+      reader.readAsDataURL(file);
+    }
+  };
+  const handleRotate = () => {
+    const current = el.rotation || 0;
+    onChange({ rotation: (current + 90) % 360 });
+  };
   return (
     <div className="flex flex-col gap-3 mt-4">
-      <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">URL</label><input type="text" value={el.src} onChange={e => onChange({ src: e.target.value })} className="w-full px-1.5 py-1 text-xs border rounded outline-none" /></div>
-      <div className="w-full overflow-hidden"><label className="block text-[10px] font-semibold text-gray-500 uppercase">Upload</label><input type="file" accept="image/*" onChange={handleFile} className="w-full text-[10px] file:mr-1 file:py-0.5 file:px-1 file:rounded file:border-0 file:text-[9px] file:bg-gray-100" /></div>
-      <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">Alt Text</label><input type="text" value={el.alt} onChange={e => onChange({ alt: e.target.value })} className="w-full px-1.5 py-1 text-xs border rounded outline-none" /></div>
+      <div>
+        <label className="block text-[10px] font-semibold text-gray-500 uppercase">Image URL</label>
+        <input type="text" value={el.src} onChange={e => onChange({ src: e.target.value })} placeholder="https://example.com/image.png" className="w-full px-1.5 py-1 text-xs border rounded outline-none break-all" />
+        <p className="text-[8px] text-gray-400 mt-0.5">Supports PNG, JPG, GIF, SVG, WebP</p>
+      </div>
+      <div>
+        <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Upload</label>
+        <label className="flex items-center justify-center gap-1.5 w-full py-1.5 text-[10px] font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded cursor-pointer transition-colors">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Choose File
+          <input type="file" accept="image/*,.gif" onChange={handleFile} className="hidden" />
+        </label>
+      </div>
+      <div>
+        <label className="block text-[10px] font-semibold text-gray-500 uppercase">Alt Text</label>
+        <input type="text" value={el.alt} onChange={e => onChange({ alt: e.target.value })} className="w-full px-1.5 py-1 text-xs border rounded outline-none" />
+      </div>
+      <div>
+        <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Rotate</label>
+        <button onClick={handleRotate} className="w-full py-1.5 text-[10px] font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded flex items-center justify-center gap-1.5 transition-colors">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          90° ({el.rotation || 0}°)
+        </button>
+      </div>
     </div>
   );
 };
@@ -74,7 +133,36 @@ const SidebarCodeFields = ({ el, onChange }: { el: CodeElement; onChange: (u: Pa
             <option value="latex">LaTeX</option>
           </select>
         </div>
+        <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">Theme</label>
+          <select value={el.theme || 'vs-dark'} onChange={e => onChange({ theme: e.target.value as CodeTheme })} className="w-full px-1 py-1 text-[11px] border rounded outline-none bg-white">
+            <option value="vs-dark">VS Dark</option>
+            <option value="monokai">Monokai</option>
+            <option value="ally-dark">Ally Dark</option>
+            <option value="ally-light">Ally Light</option>
+            <option value="solarized">Solarized</option>
+          </select>
+        </div>
         <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">Size</label><input type="number" step="0.1" value={el.fontSize} onChange={e => onChange({ fontSize: Number(e.target.value) })} className="w-full px-1.5 py-1 text-[11px] border rounded" /></div>
+        <div>
+          <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Line Numbers</label>
+          <button
+            onClick={() => onChange({ showLineNumbers: !el.showLineNumbers })}
+            className={`w-full py-1 text-[10px] font-bold border rounded flex items-center justify-center gap-1.5 transition-colors ${el.showLineNumbers ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white hover:bg-gray-100 text-gray-600 border-gray-200'}`}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>
+            {el.showLineNumbers ? 'ON' : 'OFF'}
+          </button>
+        </div>
+        <div>
+          <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Frame</label>
+          <button
+            onClick={() => onChange({ showFrame: !el.showFrame })}
+            className={`w-full py-1 text-[10px] font-bold border rounded flex items-center justify-center gap-1.5 transition-colors ${el.showFrame ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white hover:bg-gray-100 text-gray-600 border-gray-200'}`}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            {el.showFrame ? 'ON' : 'OFF'}
+          </button>
+        </div>
       </div>
       <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">Code</label><textarea value={el.code} onChange={e => onChange({ code: e.target.value })} spellCheck={false} className="w-full min-h-[80px] p-1.5 text-[11px] border rounded outline-none font-mono whitespace-pre resize-y" /></div>
     </div>

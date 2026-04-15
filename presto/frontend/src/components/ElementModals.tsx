@@ -10,20 +10,12 @@ type DimensionInputsProps = {
   setWidth: (value: number) => void;
   height: number;
   setHeight: (value: number) => void;
-  x: number;
-  setX: (value: number) => void;
-  y: number;
-  setY: (value: number) => void;
-  isEdit: boolean;
 };
 
 // Helper component for common size/position inputs
 const DimensionInputs = ({
   width, setWidth,
-  height, setHeight,
-  x, setX,
-  y, setY,
-  isEdit
+  height, setHeight
 }: DimensionInputsProps) => (
   <div className="grid grid-cols-2 gap-4 mt-2 p-3 bg-gray-50 rounded border border-gray-200">
     <div>
@@ -34,18 +26,6 @@ const DimensionInputs = ({
       <label className="block text-xs font-semibold text-gray-700 mb-1">Height (%)</label>
       <input type="number" step="any" min="1" max="100" value={height} onChange={(e) => setHeight(Number(e.target.value))} className="w-full px-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm" required />
     </div>
-    {isEdit && (
-      <>
-        <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1">X Position (%)</label>
-          <input type="number" step="any" min="0" max="100" value={x} onChange={(e) => setX(Number(e.target.value))} className="w-full px-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm" required />
-        </div>
-        <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1">Y Position (%)</label>
-          <input type="number" step="any" min="0" max="100" value={y} onChange={(e) => setY(Number(e.target.value))} className="w-full px-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm" required />
-        </div>
-      </>
-    )}
   </div>
 );
 
@@ -53,11 +33,11 @@ export const TextModal = ({ element, onClose, onSave }: { element?: TextElement,
   const [text, setText] = useState(element?.text || '');
   const [fontSize, setFontSize] = useState(element?.fontSize || 1);
   const [color, setColor] = useState(element?.color || '#000000');
+  const [backgroundColor, setBackgroundColor] = useState(element?.backgroundColor || 'transparent');
+  const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right'>(element?.textAlign || 'left');
 
   const [width, setWidth] = useState(element?.width || 30);
   const [height, setHeight] = useState(element?.height || 20);
-  const [x, setX] = useState(element?.x || 0);
-  const [y, setY] = useState(element?.y || 0);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,15 +45,15 @@ export const TextModal = ({ element, onClose, onSave }: { element?: TextElement,
       id: element?.id || Date.now().toString(),
       type: 'text',
       layer: element?.layer || 0,
-      width, height, x, y,
-      text, fontSize, color
+      width, height, x: element?.x || 0, y: element?.y || 0,
+      text, fontSize, color, backgroundColor, textAlign
     });
   };
 
   return (
     <Modal title={element ? "Edit Text" : "Add Text"} onClose={onClose}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <DimensionInputs width={width} setWidth={setWidth} height={height} setHeight={setHeight} x={x} setX={setX} y={y} setY={setY} isEdit={!!element} />
+        <DimensionInputs width={width} setWidth={setWidth} height={height} setHeight={setHeight} />
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium text-gray-700">Text Content</label>
           <textarea
@@ -82,11 +62,39 @@ export const TextModal = ({ element, onClose, onSave }: { element?: TextElement,
             placeholder="Enter your text here..."
           />
         </div>
-        <div className="flex gap-4">
-          <Input label="Font Size (em)" type="number" step="0.1" value={fontSize} onChange={(e) => setFontSize(Number(e.target.value))} required />
-          <div className="flex flex-col gap-1 w-full">
-            <label className="text-sm font-medium text-gray-700">Color (HEX)</label>
-            <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-full h-10 p-1 rounded cursor-pointer" />
+        <div className="flex flex-col gap-4">
+          <div className="grid grid-cols-2 gap-4">
+            <Input label="Font Size (em)" type="number" step="0.1" value={fontSize} onChange={(e) => setFontSize(Number(e.target.value))} required />
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-700">Alignment</label>
+              <div className="flex gap-1 h-10">
+                <button type="button" onClick={() => setTextAlign('left')} className={`flex-1 flex items-center justify-center border rounded transition-colors ${textAlign === 'left' ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border-gray-300'}`} title="Align Left">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="17" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
+                </button>
+                <button type="button" onClick={() => setTextAlign('center')} className={`flex-1 flex items-center justify-center border rounded transition-colors ${textAlign === 'center' ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border-gray-300'}`} title="Align Center">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="10" x2="6" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="18" y1="14" x2="6" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
+                </button>
+                <button type="button" onClick={() => setTextAlign('right')} className={`flex-1 flex items-center justify-center border rounded transition-colors ${textAlign === 'right' ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border-gray-300'}`} title="Align Right">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="7" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-700">Text Color</label>
+              <div className="flex gap-2 items-center">
+                <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-12 h-10 p-1 rounded cursor-pointer border shadow-sm" />
+                <input type="text" value={color} onChange={(e) => setColor(e.target.value)} className="flex-1 h-10 px-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none font-mono text-sm" />
+              </div>
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-700">Background Color</label>
+              <div className="flex gap-2 items-center">
+                <input type="color" value={backgroundColor === 'transparent' ? '#ffffff' : backgroundColor} onChange={(e) => setBackgroundColor(e.target.value)} className="w-12 h-10 p-1 rounded cursor-pointer border shadow-sm" />
+                <input type="text" value={backgroundColor} onChange={(e) => setBackgroundColor(e.target.value)} placeholder="transparent" className="flex-1 h-10 px-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none font-mono text-sm" />
+              </div>
+            </div>
           </div>
         </div>
         <div className="flex gap-3 justify-end mt-4">
@@ -104,8 +112,6 @@ export const ImageModal = ({ element, onClose, onSave }: { element?: ImageElemen
 
   const [width, setWidth] = useState(element?.width || 30);
   const [height, setHeight] = useState(element?.height || 30);
-  const [x, setX] = useState(element?.x || 0);
-  const [y, setY] = useState(element?.y || 0);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -122,7 +128,7 @@ export const ImageModal = ({ element, onClose, onSave }: { element?: ImageElemen
       id: element?.id || Date.now().toString(),
       type: 'image',
       layer: element?.layer || 0,
-      width, height, x, y,
+      width, height, x: element?.x || 0, y: element?.y || 0,
       src, alt
     });
   };
@@ -130,7 +136,7 @@ export const ImageModal = ({ element, onClose, onSave }: { element?: ImageElemen
   return (
     <Modal title={element ? "Edit Image" : "Add Image"} onClose={onClose}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <DimensionInputs width={width} setWidth={setWidth} height={height} setHeight={setHeight} x={x} setX={setX} y={y} setY={setY} isEdit={!!element} />
+        <DimensionInputs width={width} setWidth={setWidth} height={height} setHeight={setHeight} />
         <Input label="Image URL or Base64" value={src} onChange={(e) => setSrc(e.target.value)} required />
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium text-gray-700">Or Upload File</label>
@@ -152,8 +158,6 @@ export const VideoModal = ({ element, onClose, onSave }: { element?: VideoElemen
 
   const [width, setWidth] = useState(element?.width || 40);
   const [height, setHeight] = useState(element?.height || 30);
-  const [x, setX] = useState(element?.x || 0);
-  const [y, setY] = useState(element?.y || 0);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,7 +170,7 @@ export const VideoModal = ({ element, onClose, onSave }: { element?: VideoElemen
       id: element?.id || Date.now().toString(),
       type: 'video',
       layer: element?.layer || 0,
-      width, height, x, y,
+      width, height, x: element?.x || 0, y: element?.y || 0,
       src: finalSrc, autoplay
     });
   };
@@ -174,7 +178,7 @@ export const VideoModal = ({ element, onClose, onSave }: { element?: VideoElemen
   return (
     <Modal title={element ? "Edit Video" : "Add Video"} onClose={onClose}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <DimensionInputs width={width} setWidth={setWidth} height={height} setHeight={setHeight} x={x} setX={setX} y={y} setY={setY} isEdit={!!element} />
+        <DimensionInputs width={width} setWidth={setWidth} height={height} setHeight={setHeight} />
         <Input label="YouTube URL" value={src} onChange={(e) => setSrc(e.target.value)} placeholder="https://www.youtube.com/embed/dQw4w9WgXcQ" required />
         <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
           <input type="checkbox" checked={autoplay} onChange={(e) => setAutoplay(e.target.checked)} className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500" />
@@ -195,8 +199,6 @@ export const CodeModal = ({ element, onClose, onSave }: { element?: CodeElement,
 
   const [width, setWidth] = useState(element?.width || 35);
   const [height, setHeight] = useState(element?.height || 25);
-  const [x, setX] = useState(element?.x || 0);
-  const [y, setY] = useState(element?.y || 0);
   const detectedLanguage = code.trim() ? detectLanguage(code) : element?.language || 'javascript';
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -205,7 +207,7 @@ export const CodeModal = ({ element, onClose, onSave }: { element?: CodeElement,
       id: element?.id || Date.now().toString(),
       type: 'code',
       layer: element?.layer || 0,
-      width, height, x, y,
+      width, height, x: element?.x || 0, y: element?.y || 0,
       code, language: detectedLanguage, fontSize
     });
   };
@@ -213,7 +215,7 @@ export const CodeModal = ({ element, onClose, onSave }: { element?: CodeElement,
   return (
     <Modal title={element ? "Edit Code Block" : "Add Code Block"} onClose={onClose}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <DimensionInputs width={width} setWidth={setWidth} height={height} setHeight={setHeight} x={x} setX={setX} y={y} setY={setY} isEdit={!!element} />
+        <DimensionInputs width={width} setWidth={setWidth} height={height} setHeight={setHeight} />
         <div className="flex gap-4">
           <div className="flex flex-col gap-1 w-full">
             <span className="text-sm font-medium text-gray-700">Detected Language</span>

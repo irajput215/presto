@@ -49,11 +49,13 @@
                     "layer": 1,
                     "width": 30,
                     "height": 20,
-                    "x": 13.047138047138045,
-                    "y": 58.47887323943662,
+                    "x": 12.96296296296296,
+                    "y": 58.616804273919385,
                     "text": "Yo hi ",
                     "fontSize": 2,
-                    "color": "#000000"
+                    "color": "#000000",
+                    "backgroundColor": "#ffffff",
+                    "textAlign": "left"
                   },
                   {
                     "id": "1776287674728",
@@ -61,56 +63,35 @@
                     "layer": 2,
                     "width": 35,
                     "height": 25,
-                    "x": 16.835016835016837,
-                    "y": 22.95774647887324,
+                    "x": 17.003367003367003,
+                    "y": 22.819815444390482,
                     "code": "print('hello')\n",
                     "language": "python",
-                    "fontSize": 1
+                    "fontSize": 1,
+                    "theme": "monokai",
+                    "showLineNumbers": false,
+                    "showFrame": false
+                  },
+                  {
+                    "id": "1776288977697",
+                    "type": "image",
+                    "layer": 3,
+                    "width": 26.88552188552189,
+                    "height": 25.172413793103445,
+                    "x": 56.48148148148146,
+                    "y": 16,
+                    "src": "https://t3.ftcdn.net/jpg/02/51/23/82/360_F_251238249_5dCTyOvRHdruTVzDjO6M8n9WwuJvvWsq.jpg",
+                    "alt": "image",
+                    "rotation": 0
                   }
                 ]
               },
               {
-                "id": "1776285371247",
+                "id": "1776288870533",
                 "background": null,
                 "elements": [
                   {
-                    "id": "1776285371247-title",
-                    "type": "text",
-                    "x": 20,
-                    "y": 5,
-                    "width": 60,
-                    "height": 15,
-                    "layer": 0,
-                    "text": "Title Text",
-                    "fontSize": 3,
-                    "color": "#000000"
-                  }
-                ]
-              },
-              {
-                "id": "1776285377081",
-                "background": null,
-                "elements": [
-                  {
-                    "id": "1776285377081-title",
-                    "type": "text",
-                    "x": 20,
-                    "y": 5,
-                    "width": 60,
-                    "height": 15,
-                    "layer": 0,
-                    "text": "Title Text",
-                    "fontSize": 3,
-                    "color": "#000000"
-                  }
-                ]
-              },
-              {
-                "id": "1776285447298",
-                "background": null,
-                "elements": [
-                  {
-                    "id": "1776285447298-title",
+                    "id": "1776288870533-title",
                     "type": "text",
                     "x": 20,
                     "y": 5,
@@ -124,7 +105,7 @@
                 ]
               }
             ],
-            "updatedAt": 1776288200478,
+            "updatedAt": 1776290052826,
             "fontFamily": "Georgia, serif",
             "defaultBackground": {
               "kind": "solid",

@@ -24,6 +24,8 @@ export type TextElement = {
   text: string;
   fontSize: number;
   color: string;
+  backgroundColor?: string;
+  textAlign?: 'left' | 'center' | 'right';
 };
 
 export type ImageElement = {
@@ -36,6 +38,7 @@ export type ImageElement = {
   layer: number;
   src: string;
   alt: string;
+  rotation?: number;
 };
 
 export type VideoElement = {
@@ -51,6 +54,7 @@ export type VideoElement = {
 };
 
 export type CodeLanguage = 'c' | 'python' | 'javascript' | 'latex';
+export type CodeTheme = 'vs-dark' | 'monokai' | 'ally-dark' | 'ally-light' | 'solarized';
 
 export type CodeElement = {
   id: string;
@@ -63,6 +67,9 @@ export type CodeElement = {
   code: string;
   fontSize: number;
   language: CodeLanguage;
+  theme?: CodeTheme;
+  showLineNumbers?: boolean;
+  showFrame?: boolean;
 };
 
 export type SlideElement = TextElement | ImageElement | VideoElement | CodeElement;
@@ -118,6 +125,8 @@ export type ElementDraft =
     text: string;
     fontSize: number;
     color: string;
+    backgroundColor?: string;
+    textAlign?: 'left' | 'center' | 'right';
   }
   | {
     type: 'image';
@@ -127,6 +136,7 @@ export type ElementDraft =
     y: number;
     src: string;
     alt: string;
+    rotation?: number;
   }
   | {
     type: 'video';
@@ -146,6 +156,9 @@ export type ElementDraft =
     code: string;
     fontSize: number;
     language: CodeLanguage;
+    theme?: CodeTheme;
+    showLineNumbers?: boolean;
+    showFrame?: boolean;
   };
 
 export type StorePayload = {

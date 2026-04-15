@@ -160,26 +160,34 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
       case 'text':
         return (
           <div
-            style={{ fontSize: `${element.fontSize}em`, color: element.color }}
-            className="w-full h-full overflow-y-auto whitespace-pre-wrap break-words text-left flex items-start"
+            style={{ 
+              fontSize: `${element.fontSize}em`, 
+              color: element.color,
+              backgroundColor: element.backgroundColor || 'transparent',
+              textAlign: element.textAlign || 'left',
+              width: '100%',
+              height: '100%'
+            }}
+            className="overflow-y-auto whitespace-pre-wrap break-words p-2"
           >
             {element.text}
           </div>
         );
       case 'image':
         return (
-          <div className="w-full h-full overflow-hidden flex items-center justify-center p-1 bg-gray-50 border border-gray-100 relative">
+          <div className="w-full h-full overflow-hidden relative">
             <img
               src={element.src}
               alt={element.alt}
-              className="w-full h-full object-contain select-none pointer-events-none"
+              className="w-full h-full object-cover select-none pointer-events-none"
+              style={{ transform: `rotate(${element.rotation || 0}deg)` }}
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
                 const span = e.currentTarget.nextElementSibling as HTMLElement;
                 if (span) span.style.display = 'block';
               }}
             />
-            <span className="text-gray-400 text-xs text-center break-words max-w-full truncate px-2 hidden" title={element.alt}>
+            <span className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs text-center px-2 hidden">
               {element.alt || 'Broken Image'}
             </span>
           </div>
@@ -198,28 +206,55 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
           </div>
         );
       }
-      case 'code':
+      case 'code': {
+        const themes: Record<string, { bg: string; plain: string; keyword: string; string: string; comment: string; number: string }> = {
+          'vs-dark':     { bg: '#1e1e1e', plain: '#d4d4d4', keyword: '#569cd6', string: '#ce9178', comment: '#6a9955', number: '#b5cea8' },
+          'monokai':     { bg: '#272822', plain: '#f8f8f2', keyword: '#f92672', string: '#e6db74', comment: '#75715e', number: '#ae81ff' },
+          'ally-dark':   { bg: '#1a1a2e', plain: '#e0e0e0', keyword: '#00d2ff', string: '#ffcb6b', comment: '#546e7a', number: '#f78c6c' },
+          'ally-light':  { bg: '#fafafa', plain: '#383a42', keyword: '#a626a4', string: '#50a14f', comment: '#a0a1a7', number: '#986801' },
+          'solarized':   { bg: '#002b36', plain: '#839496', keyword: '#268bd2', string: '#2aa198', comment: '#586e75', number: '#d33682' },
+        };
+        const t = themes[element.theme || 'vs-dark'] || themes['vs-dark'];
+        const langLabel: Record<string, string> = { javascript: 'JavaScript', python: 'Python', c: 'C', latex: 'LaTeX' };
         return (
-          <div
-            style={{ fontSize: `${element.fontSize}em` }}
-            className="w-full h-full overflow-auto bg-[#1e1e1e] p-2 pointer-events-none select-none font-mono"
-          >
-            <pre className="m-0 whitespace-pre text-white leading-normal">
-              {highlightCode(element.code, element.language).map((line, i) => (
-                <div key={i}>
-                  {line.map((segment, j) => {
-                    let color = '#d4d4d4'; // plain
-                    if (segment.kind === 'keyword') color = '#569cd6';
-                    if (segment.kind === 'string') color = '#ce9178';
-                    if (segment.kind === 'comment') color = '#6a9955';
-                    if (segment.kind === 'number') color = '#b5cea8';
-                    return <span key={j} style={{ color }}>{segment.value}</span>;
-                  })}
-                </div>
-              ))}
-            </pre>
+          <div className="w-full h-full flex flex-col overflow-hidden pointer-events-none select-none font-mono" style={{ backgroundColor: t.bg }}>
+            {/* Frame title bar */}
+            {element.showFrame !== false && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 shrink-0" style={{ backgroundColor: t.bg, borderBottom: `1px solid ${t.comment}33` }}>
+                <span className="w-[10px] h-[10px] rounded-full bg-[#ff5f57]" />
+                <span className="w-[10px] h-[10px] rounded-full bg-[#febc2e]" />
+                <span className="w-[10px] h-[10px] rounded-full bg-[#28c840]" />
+                <span className="ml-auto text-[9px] font-semibold tracking-wider uppercase" style={{ color: t.comment }}>{langLabel[element.language] || element.language}</span>
+              </div>
+            )}
+            {/* Code body */}
+            <div
+              style={{ fontSize: `${element.fontSize}em` }}
+              className="flex-1 overflow-auto p-2"
+            >
+              <pre className="m-0 whitespace-pre leading-normal" style={{ color: t.plain }}>
+                {highlightCode(element.code, element.language).map((line, i) => (
+                  <div key={i} className="flex">
+                    {element.showLineNumbers && (
+                      <span className="inline-block w-8 text-right pr-3 select-none shrink-0" style={{ color: t.comment, opacity: 0.6 }}>{i + 1}</span>
+                    )}
+                    <span>
+                      {line.map((segment, j) => {
+                        let color = t.plain;
+                        if (segment.kind === 'keyword') color = t.keyword;
+                        if (segment.kind === 'string') color = t.string;
+                        if (segment.kind === 'comment') color = t.comment;
+                        if (segment.kind === 'number') color = t.number;
+                        return <span key={j} style={{ color }}>{segment.value}</span>;
+                      })}
+                    </span>
+                  </div>
+                ))}
+              </pre>
+            </div>
           </div>
         );
+      }
       default:
         return null;
     }
