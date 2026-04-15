@@ -1,0 +1,84 @@
+{
+  "admins": {
+    "hayden.smith@unsw.edu.au": {
+      "name": "Hayden",
+      "password": "bananapie",
+      "store": {
+        "name": " Hayden",
+        "height": 100
+      },
+      "sessionActive": false
+    },
+    "test@example.com": {
+      "name": "test",
+      "password": "test0",
+      "store": {
+        "presentations": [
+          {
+            "id": "41b9279c-d399-4d1a-8baf-8fbb1b36d3a1",
+            "name": "log",
+            "description": "logging",
+            "thumbnail": "",
+            "slides": [
+              {
+                "id": "eb2b15be-a07b-474c-8542-b56aac165f6a",
+                "background": null,
+                "elements": []
+              }
+            ],
+            "updatedAt": 1776276426724,
+            "fontFamily": "Georgia, serif",
+            "defaultBackground": {
+              "kind": "solid",
+              "value": "#ffffff"
+            }
+          },
+          {
+            "id": "3e6d4b31-1b83-4502-9072-b891e456f5f5",
+            "name": "pre",
+            "description": "presto",
+            "thumbnail": "",
+            "slides": [
+              {
+                "id": "1776279480899",
+                "background": null,
+                "elements": [
+                  {
+                    "id": "1776279565518",
+                    "type": "text",
+                    "layer": 1,
+                    "width": 30,
+                    "height": 20,
+                    "x": 13.758389261744966,
+                    "y": 21.51394422310757,
+                    "text": "hi tony",
+                    "fontSize": 2,
+                    "color": "#4f7a28"
+                  }
+                ]
+              },
+              {
+                "id": "1776279490032",
+                "background": null,
+                "elements": []
+              }
+            ],
+            "updatedAt": 1776279568315,
+            "fontFamily": "Georgia, serif",
+            "defaultBackground": {
+              "kind": "solid",
+              "value": "#ffffff"
+            }
+          }
+        ]
+      },
+      "sessionActive": false
+    },
+    "yog@email.com": {
+      "name": "yog",
+      "password": "yog0",
+      "store": {},
+      "sessionActive": false
+    }
+  }
+}
