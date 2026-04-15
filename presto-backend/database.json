@@ -40,46 +40,91 @@
             "thumbnail": "",
             "slides": [
               {
-                "id": "1776279490032",
+                "id": "1776284250680",
                 "background": null,
                 "elements": [
                   {
-                    "id": "1776281518645",
-                    "type": "video",
-                    "layer": 2,
-                    "width": 95.5,
-                    "height": 69.76190476190476,
-                    "x": 1.0013982102908265,
-                    "y": 4.909884272434072,
-                    "src": "https://www.youtube.com/embed/JWKz0Hcdg-8",
-                    "autoplay": false
+                    "id": "1776284250680-title",
+                    "type": "text",
+                    "x": 20,
+                    "y": 5,
+                    "width": 60,
+                    "height": 15,
+                    "layer": 0,
+                    "text": "Title Text",
+                    "fontSize": 3,
+                    "color": "#000000"
                   },
                   {
-                    "id": "1776281561535",
-                    "type": "text",
-                    "layer": 3,
-                    "width": 56.25,
-                    "height": 16.565656565656564,
-                    "x": 25.227272727272727,
-                    "y": 75.75757575757575,
-                    "text": "Databricks Project\nAs they are part of the URL, they are \"naturally\" strings.\n\nBut when you declare them with Python types (in the example above, as int), they are converted to that type and validated against it.\n\nAll the same process that applied for path parameters also applies for query parameters:\n\nEditor support (obviously)\nData \"parsing\"\nData validation\nAutomatic documentation\nDefaults¶\nAs query parameters are not a fixed part of a path, they can be optional and can have default values.\n\nIn the example above they have default values of skip=0 and limit=10.\n\nSo, going to the URL:\n\n\nhttp://127.0.0.1:8000/items/\nwould be the same as going to:\n\n\nhttp://127.0.0.1:8000/items/?skip=0&limit=10\nBut if you go to, for example:\n\n\nhttp://127.0.0.1:8000/items/?skip=20\nThe parameter values in your function will be:\n\nskip=20: because you set it in the URL\nlimit=10: because that was the default value\nOptional parameters",
-                    "fontSize": 2,
-                    "color": "#53d5fd"
+                    "id": "1776285330287",
+                    "type": "code",
+                    "layer": 1,
+                    "x": 20.306859205776174,
+                    "y": 25.93103448275862,
+                    "width": 26.3501805054152,
+                    "height": 11.4137931034483,
+                    "code": "print('hello')",
+                    "language": "python",
+                    "fontSize": 1.8
                   }
                 ]
               },
               {
-                "id": "1776281508011",
+                "id": "1776285371247",
                 "background": null,
-                "elements": []
+                "elements": [
+                  {
+                    "id": "1776285371247-title",
+                    "type": "text",
+                    "x": 20,
+                    "y": 5,
+                    "width": 60,
+                    "height": 15,
+                    "layer": 0,
+                    "text": "Title Text",
+                    "fontSize": 3,
+                    "color": "#000000"
+                  }
+                ]
               },
               {
-                "id": "1776281509728",
+                "id": "1776285377081",
                 "background": null,
-                "elements": []
+                "elements": [
+                  {
+                    "id": "1776285377081-title",
+                    "type": "text",
+                    "x": 20,
+                    "y": 5,
+                    "width": 60,
+                    "height": 15,
+                    "layer": 0,
+                    "text": "Title Text",
+                    "fontSize": 3,
+                    "color": "#000000"
+                  }
+                ]
+              },
+              {
+                "id": "1776285447298",
+                "background": null,
+                "elements": [
+                  {
+                    "id": "1776285447298-title",
+                    "type": "text",
+                    "x": 20,
+                    "y": 5,
+                    "width": 60,
+                    "height": 15,
+                    "layer": 0,
+                    "text": "Title Text",
+                    "fontSize": 3,
+                    "color": "#000000"
+                  }
+                ]
               }
             ],
-            "updatedAt": 1776283224025,
+            "updatedAt": 1776286243548,
             "fontFamily": "Georgia, serif",
             "defaultBackground": {
               "kind": "solid",

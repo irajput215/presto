@@ -50,7 +50,7 @@ export type VideoElement = {
   autoplay: boolean;
 };
 
-export type CodeLanguage = 'c' | 'python' | 'javascript';
+export type CodeLanguage = 'c' | 'python' | 'javascript' | 'latex';
 
 export type CodeElement = {
   id: string;
@@ -110,43 +110,43 @@ export type PresentationDraft = {
 
 export type ElementDraft =
   | {
-      type: 'text';
-      width: number;
-      height: number;
-      x: number;
-      y: number;
-      text: string;
-      fontSize: number;
-      color: string;
-    }
+    type: 'text';
+    width: number;
+    height: number;
+    x: number;
+    y: number;
+    text: string;
+    fontSize: number;
+    color: string;
+  }
   | {
-      type: 'image';
-      width: number;
-      height: number;
-      x: number;
-      y: number;
-      src: string;
-      alt: string;
-    }
+    type: 'image';
+    width: number;
+    height: number;
+    x: number;
+    y: number;
+    src: string;
+    alt: string;
+  }
   | {
-      type: 'video';
-      width: number;
-      height: number;
-      x: number;
-      y: number;
-      src: string;
-      autoplay: boolean;
-    }
+    type: 'video';
+    width: number;
+    height: number;
+    x: number;
+    y: number;
+    src: string;
+    autoplay: boolean;
+  }
   | {
-      type: 'code';
-      width: number;
-      height: number;
-      x: number;
-      y: number;
-      code: string;
-      fontSize: number;
-      language: CodeLanguage;
-    };
+    type: 'code';
+    width: number;
+    height: number;
+    x: number;
+    y: number;
+    code: string;
+    fontSize: number;
+    language: CodeLanguage;
+  };
 
 export type StorePayload = {
   presentations: Presentation[];

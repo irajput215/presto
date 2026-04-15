@@ -44,8 +44,9 @@ function App() {
                 }
               >
                 <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/presentation/:id" element={<EditPresentation />} />
               </Route>
+              
+              <Route path="/presentation/:id" element={<ProtectedRoute><EditPresentation /></ProtectedRoute>} />
 
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />

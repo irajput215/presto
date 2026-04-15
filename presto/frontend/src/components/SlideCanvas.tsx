@@ -10,6 +10,7 @@ interface SlideCanvasProps {
   onUpdateElement: (id: string, updates: Partial<SlideElement>) => void;
   onDeleteElement: (id: string) => void;
   isEditable?: boolean;
+  slideNumber?: number;
 }
 
 export const SlideCanvas: React.FC<SlideCanvasProps> = ({
@@ -19,7 +20,8 @@ export const SlideCanvas: React.FC<SlideCanvasProps> = ({
   onDoubleClickElement,
   onUpdateElement,
   onDeleteElement,
-  isEditable = true
+  isEditable = true,
+  slideNumber
 }) => {
   const bg = slide.background;
   let bgStyle: React.CSSProperties = { backgroundColor: '#ffffff' };
@@ -42,7 +44,7 @@ export const SlideCanvas: React.FC<SlideCanvasProps> = ({
 
   return (
     <div
-      className="relative w-full max-w-4xl aspect-[16/9] shadow-2xl rounded-sm ring-1 ring-black/5 flex items-center justify-center isolate overflow-hidden"
+      className="relative w-full h-full aspect-[16/9] shadow-2xl rounded-sm ring-1 ring-black/5 flex items-center justify-center isolate overflow-hidden"
       style={bgStyle}
       onClick={handleCanvasClick}
     >
@@ -63,6 +65,12 @@ export const SlideCanvas: React.FC<SlideCanvasProps> = ({
           onDelete={() => onDeleteElement(element.id)}
         />
       ))}
+
+      {slideNumber !== undefined && (
+        <div className="absolute bottom-4 left-4 text-[1em] font-medium text-gray-500 z-10 pointer-events-none">
+          {slideNumber}
+        </div>
+      )}
     </div>
   );
 };

@@ -9,12 +9,14 @@ const languageKeywords: Record<CodeLanguage, string[]> = {
   c: ['break', 'case', 'char', 'const', 'continue', 'double', 'else', 'float', 'for', 'if', 'include', 'int', 'long', 'return', 'sizeof', 'struct', 'switch', 'void', 'while'],
   python: ['and', 'as', 'class', 'def', 'elif', 'else', 'False', 'for', 'from', 'if', 'import', 'in', 'None', 'not', 'or', 'print', 'return', 'self', 'True', 'while'],
   javascript: ['await', 'class', 'const', 'else', 'export', 'for', 'from', 'function', 'if', 'import', 'let', 'new', 'return', 'true', 'false', 'var', 'while'],
+  latex: ['begin', 'end', 'frac', 'sum', 'int', 'alpha', 'beta', 'theta', 'gamma', 'lambda', 'text', 'sqrt', 'cdot', 'in', 'infty', 'partial', 'nabla', 'rightarrow', 'leftarrow', 'Rightarrow', 'Leftarrow'],
 };
 
 export const languageNames: Record<CodeLanguage, string> = {
   c: 'C',
   python: 'Python',
   javascript: 'JavaScript',
+  latex: 'LaTeX',
 };
 
 export const detectLanguage = (code: string): CodeLanguage => {
@@ -22,6 +24,7 @@ export const detectLanguage = (code: string): CodeLanguage => {
     c: 0,
     python: 0,
     javascript: 0,
+    latex: 0,
   };
 
   const trimmedCode = code.trim();
@@ -59,6 +62,16 @@ export const detectLanguage = (code: string): CodeLanguage => {
   ]) * 4;
   scores.javascript += countMatches([/\b(JSON|Promise|React)\b/g, /;\s*$/gm]);
 
+  scores.latex += countMatches([
+    /\\begin\{/g,
+    /\\end\{/g,
+    /\\frac\{/g,
+    /\\sum_/g,
+    /\\int_/g,
+    /\\alpha\b/g,
+    /\$[^$]+\$/g
+  ]) * 4;
+
   const detected = (Object.entries(scores) as [CodeLanguage, number][])
     .sort(([, a], [, b]) => b - a)[0];
 
@@ -88,7 +101,8 @@ const classifyToken = (token: string, language: CodeLanguage): Segment['kind'] =
 };
 
 const highlightLine = (line: string, language: CodeLanguage): Segment[] => {
-  const commentStart = language === 'python' ? line.indexOf('#') : line.indexOf('//');
+  let commentStart = language === 'python' ? line.indexOf('#') : line.indexOf('//');
+  if (language === 'latex') commentStart = line.indexOf('%');
   const codePart = commentStart >= 0 ? line.slice(0, commentStart) : line;
   const commentPart = commentStart >= 0 ? line.slice(commentStart) : '';
 
