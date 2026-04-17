@@ -15,7 +15,6 @@ import { PreviewPresentation } from './pages/PreviewPresentation';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { token } = useAuth();
-  // Send guests to login before they can edit or view private pages.
   if (!token) {
     return <Navigate to="/login" replace />;
   }
@@ -24,7 +23,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 function App() {
   return (
-    // Providers stay at the top so every page can use auth, store, and errors.
     <ErrorProvider>
       <AuthProvider>
         <StoreProvider>

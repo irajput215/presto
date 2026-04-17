@@ -9,7 +9,6 @@ interface ModalProps {
 
 export const Modal: React.FC<ModalProps> = ({ title, onClose, children, maxWidthClassName = 'max-w-md' }) => {
   return (
-    // Simple centered modal used by forms and panels.
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in">
       <div className={`bg-white rounded shadow-lg w-full ${maxWidthClassName} flex flex-col overflow-hidden animate-in zoom-in-95`}>
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">

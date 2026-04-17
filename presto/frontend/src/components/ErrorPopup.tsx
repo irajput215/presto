@@ -4,7 +4,6 @@ import { useError } from '../context/ErrorContext';
 export const ErrorPopup: React.FC = () => {
   const { errors, removeError } = useError();
 
-  // Hide the popup area when there are no errors.
   if (errors.length === 0) return null;
 
   return (

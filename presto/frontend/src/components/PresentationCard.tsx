@@ -9,21 +9,18 @@ interface PresentationCardProps {
 
 export const PresentationCard: React.FC<PresentationCardProps> = ({ presentation, onClick }) => {
   return (
-    // Dashboard card opens the selected presentation.
     <button
       onClick={onClick}
       className="w-full flex md:flex-col bg-white border border-gray-100 rounded shadow-sm hover:shadow-md hover:border-gray-300 transition-all text-left overflow-hidden group min-w-[100px]"
     >
       <div className="w-1/3 md:w-full aspect-[2/1] relative bg-gray-100 border-r md:border-r-0 md:border-b border-gray-100 shrink-0 flex items-center justify-center">
         {presentation.thumbnail ? (
-          // Use uploaded or URL thumbnail when one exists.
           <img 
             src={presentation.thumbnail} 
             alt={`${presentation.name} thumbnail`}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
-          // Otherwise show a live preview of the first slide.
           <div className="w-full h-full">
             <SlideThumbnail
               slide={presentation.slides[0]}

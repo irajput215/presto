@@ -20,7 +20,6 @@ export const languageNames: Record<CodeLanguage, string> = {
 };
 
 export const detectLanguage = (code: string): CodeLanguage => {
-  // Score simple language clues and choose the strongest match.
   const scores: Record<CodeLanguage, number> = {
     c: 0,
     python: 0,
@@ -102,7 +101,6 @@ const classifyToken = (token: string, language: CodeLanguage): Segment['kind'] =
 };
 
 const highlightLine = (line: string, language: CodeLanguage): Segment[] => {
-  // Keep comments and strings separate so their colors are stable.
   let commentStart = language === 'python' ? line.indexOf('#') : line.indexOf('//');
   if (language === 'latex') commentStart = line.indexOf('%');
   const codePart = commentStart >= 0 ? line.slice(0, commentStart) : line;

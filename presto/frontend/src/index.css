@@ -34,7 +34,6 @@ select {
 }
 
 @keyframes slide-in-from-right {
-  /* Preview transition when moving forward. */
   from {
     opacity: 0;
     transform: translateX(4%);
@@ -46,7 +45,6 @@ select {
 }
 
 @keyframes slide-in-from-left {
-  /* Preview transition when moving backward. */
   from {
     opacity: 0;
     transform: translateX(-4%);

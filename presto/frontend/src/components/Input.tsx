@@ -7,7 +7,6 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, className = '', id, ...props }, ref) => {
-    // Use the label as a stable id when no id is given.
     const inputId = id || label.replace(/\s+/g, '-').toLowerCase();
 
     return (

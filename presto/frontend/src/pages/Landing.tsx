@@ -6,7 +6,6 @@ export const Landing: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    // Public entry page with login and register actions.
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#fafafa] text-gray-900 w-full px-4">
       <div className="max-w-sm w-full p-8 bg-white border border-gray-100 rounded-lg shadow-sm text-center">
         <h1 className="text-2xl font-bold tracking-tight text-gray-900 mb-2">

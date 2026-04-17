@@ -212,13 +212,12 @@ export const EditPresentation: React.FC = () => {
   const [editDescription, setEditDescription] = useState('');
   const [editThumbnailMode, setEditThumbnailMode] = useState<ThumbnailMode>('auto');
 
-  // Keep current slide in the URL.
+  // Sync slide number to URL
   useEffect(() => {
     setSearchParams({ slide: String(currentSlide + 1) }, { replace: true });
   }, [currentSlide, setSearchParams]);
 
   const navigateSlide = useCallback((direction: 'next' | 'prev') => {
-    // Move between slides and clear selected elements.
     if (!presentation) return;
     if (direction === 'next' && currentSlide < presentation.slides.length - 1) {
       setCurrentSlide(s => s + 1);
@@ -257,7 +256,6 @@ export const EditPresentation: React.FC = () => {
   const selectedEl = activeSlideData.elements.find(e => e.id === selectedElementId) || null;
 
   const handleUpdateDetails = async (e: React.FormEvent) => {
-    // Save title, description, and thumbnail choice.
     e.preventDefault();
     if (!editName.trim()) return;
     try {
@@ -283,7 +281,6 @@ export const EditPresentation: React.FC = () => {
   };
 
   const handleAddSlide = async () => {
-    // Add a simple new slide at the end.
     const newSlide = {
       id: Date.now().toString(),
       background: null,
@@ -321,7 +318,6 @@ export const EditPresentation: React.FC = () => {
   };
 
   const handleOpenDetailsModal = () => {
-    // Load current details into the edit modal.
     setEditName(presentation.name);
     setEditThumbnail(presentation.thumbnail);
     setEditDescription(presentation.description);
@@ -330,7 +326,6 @@ export const EditPresentation: React.FC = () => {
   };
 
   const handleEditThumbnailUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Store uploaded thumbnail as a data URL.
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -342,7 +337,6 @@ export const EditPresentation: React.FC = () => {
   };
 
   const handleSaveElement = async (el: SlideElement) => {
-    // Add new elements or update existing ones.
     try {
       if (editingElement) {
         await updateElement(presentation.id, activeSlideData.id, el.id, el);
@@ -360,7 +354,6 @@ export const EditPresentation: React.FC = () => {
   };
 
   const handleInlineUpdate = async (updates: Partial<SlideElement>) => {
-    // Sidebar edits save immediately.
     if (!selectedEl) return;
     try {
       const finalUpdates = { ...updates } as Partial<SlideElement> & { src?: string };
@@ -382,7 +375,6 @@ export const EditPresentation: React.FC = () => {
   };
 
   const moveSlide = async (fromIndex: number, toIndex: number) => {
-    // Reorder slides from the slide panel.
     if (fromIndex === toIndex || fromIndex < 0 || fromIndex >= slideCount) return;
     const slides = [...presentation.slides];
     const [movedSlide] = slides.splice(fromIndex, 1);
@@ -401,7 +393,6 @@ export const EditPresentation: React.FC = () => {
   };
 
   const handleRestoreHistory = async (entry: PresentationHistoryEntry) => {
-    // Replace current slides with a saved history state.
     const restoredSlides = JSON.parse(JSON.stringify(entry.slides));
     await updatePresentation(presentation.id, {
       slides: restoredSlides,
