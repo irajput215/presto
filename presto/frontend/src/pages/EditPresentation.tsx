@@ -573,42 +573,9 @@ export const EditPresentation: React.FC = () => {
 
         {/* 3. Main Slide Canvas Area */}
         <div className="flex-1 bg-gray-100 relative flex flex-col overflow-hidden">
-          {/* Quick Nav floating buttons */}
-          {slideCount > 1 && (
-            <div className="absolute bottom-4 right-12 md:right-16 flex gap-2 z-20">
-              {!isFirstSlide && (
-                <button
-                  onClick={() => navigateSlide('prev')}
-                  className="w-8 h-8 flex items-center justify-center font-bold text-sm rounded-full transition-colors shadow-md bg-black text-white hover:bg-gray-800 cursor-pointer"
-                  title="Previous Slide"
-                >
-                  ←
-                </button>
-              )}
-              {!isLastSlide && (
-                <button
-                  onClick={() => navigateSlide('next')}
-                  className="w-8 h-8 flex items-center justify-center font-bold text-sm rounded-full transition-colors shadow-md bg-black text-white hover:bg-gray-800 cursor-pointer"
-                  title="Next Slide"
-                >
-                  →
-                </button>
-              )}
-            </div>
-          )}
-
-          {/* Floating Appearance/Theme Settings trigger */}
-          <button
-            onClick={() => setIsBgModalOpen(true)}
-            className="absolute top-3 right-3 z-20 p-2 bg-white/80 hover:bg-white border border-gray-200 rounded-lg shadow-sm transition-colors backdrop-blur-sm"
-            title="Slide Background & Theme"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r="0.5" fill="currentColor" /><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor" /><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor" /><circle cx="6.5" cy="12.5" r="0.5" fill="currentColor" /><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z" /></svg>
-          </button>
-
           {/* Actual Slide Content Viewer */}
           <div className="flex-1 w-full flex items-center justify-center overflow-hidden p-4 sm:p-8 min-h-0">
-            <div className="relative flex items-center justify-center max-w-full max-h-full">
+            <div className="relative flex items-center justify-center max-w-full max-h-full group/slidebox shadow-2xl">
               <svg width="1600" height="900" className="w-auto h-auto max-w-full max-h-full opacity-0 pointer-events-none select-none shrink-0" />
               <div className="absolute inset-0 w-full h-full">
                 <SlideCanvas
@@ -625,6 +592,39 @@ export const EditPresentation: React.FC = () => {
                   onDeleteElement={(id) => deleteElement(presentation.id, activeSlideData.id, id)}
                 />
               </div>
+
+              {/* Floating Appearance/Theme Settings trigger attached to the slide corner */}
+              <button
+                onClick={() => setIsBgModalOpen(true)}
+                className="absolute top-3 right-3 z-20 p-2 bg-white/80 hover:bg-white border border-gray-200 rounded-lg shadow-sm transition-colors backdrop-blur-sm"
+                title="Slide Background & Theme"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r="0.5" fill="currentColor" /><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor" /><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor" /><circle cx="6.5" cy="12.5" r="0.5" fill="currentColor" /><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z" /></svg>
+              </button>
+
+              {/* Quick Nav floating buttons attached to the slide corner (Always Visible) */}
+              {slideCount > 1 && (
+                <div className="absolute bottom-4 right-4 flex gap-2 z-20">
+                  {!isFirstSlide && (
+                    <button
+                      onClick={() => navigateSlide('prev')}
+                      className="w-8 h-8 flex items-center justify-center font-bold text-sm rounded-full transition-colors shadow-md bg-black/80 text-white hover:bg-black backdrop-blur-sm cursor-pointer"
+                      title="Previous Slide"
+                    >
+                      ←
+                    </button>
+                  )}
+                  {!isLastSlide && (
+                    <button
+                      onClick={() => navigateSlide('next')}
+                      className="w-8 h-8 flex items-center justify-center font-bold text-sm rounded-full transition-colors shadow-md bg-black/80 text-white hover:bg-black backdrop-blur-sm cursor-pointer"
+                      title="Next Slide"
+                    >
+                      →
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
