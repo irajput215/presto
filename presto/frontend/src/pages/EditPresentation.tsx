@@ -575,7 +575,7 @@ export const EditPresentation: React.FC = () => {
         <div className="flex-1 bg-gray-100 relative flex flex-col overflow-hidden">
           {/* Quick Nav floating buttons */}
           {slideCount > 1 && (
-            <div className="absolute bottom-4 right-4 flex gap-2 z-20">
+            <div className="absolute bottom-4 right-12 md:right-16 flex gap-2 z-20">
               {!isFirstSlide && (
                 <button
                   onClick={() => navigateSlide('prev')}
