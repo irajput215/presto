@@ -453,8 +453,8 @@ export const EditPresentation: React.FC = () => {
     <div className="flex flex-col h-screen w-full bg-gray-50 overflow-hidden">
 
       {/* ── TOP HEADER BAR ───────────────────────── */}
-      <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 shrink-0">
-        <div className="flex items-center gap-4">
+      <header className="flex flex-wrap xl:flex-nowrap items-center justify-between gap-4 px-4 sm:px-6 py-3 sm:py-4 bg-white border-b border-gray-200 shrink-0">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           <Button variant="secondary" onClick={() => navigate('/dashboard')}>
             Back
           </Button>
@@ -466,9 +466,9 @@ export const EditPresentation: React.FC = () => {
               <IconSliders />
             </button>
           </div>
-          <div className="h-6 w-px bg-gray-300" />
+          <div className="hidden sm:block h-6 w-px bg-gray-300" />
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-gray-900 leading-tight truncate max-w-md">
+            <h1 className="text-lg sm:text-xl font-bold text-gray-900 leading-tight truncate max-w-[150px] sm:max-w-md">
               {presentation.name}
             </h1>
             <div className="flex items-center gap-1">
@@ -489,14 +489,14 @@ export const EditPresentation: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <Button variant="secondary" onClick={handleAddSlide}>
             <span className="mr-1">+</span> Add Slide
           </Button>
           <Button variant="danger" onClick={handleDeleteSlide}>
             Delete Slide
           </Button>
-          <div className="h-6 w-px bg-gray-300" />
+          <div className="hidden sm:block h-6 w-px bg-gray-300" />
           <Button variant="secondary" onClick={() => setIsSlidePanelOpen(true)}>
             Slide panel
           </Button>
@@ -607,20 +607,25 @@ export const EditPresentation: React.FC = () => {
           </button>
 
           {/* Actual Slide Content Viewer */}
-          <div className="w-full h-full overflow-hidden">
-            <SlideCanvas
-              slide={activeSlideData}
-              slideNumber={currentSlide + 1}
-              selectedElementId={selectedElementId}
-              defaultBackground={presentation.defaultBackground}
-              onSelectElement={(id) => {
-                setSelectedElementId(id);
-                if (id) setIsEditOpen(true);
-              }}
-              onDoubleClickElement={(el) => { setActiveModalType(el.type as ModalType); setEditingElement(el); }}
-              onUpdateElement={(id, updates) => updateElement(presentation.id, activeSlideData.id, id, updates)}
-              onDeleteElement={(id) => deleteElement(presentation.id, activeSlideData.id, id)}
-            />
+          <div className="flex-1 w-full flex items-center justify-center overflow-hidden p-4 sm:p-8 min-h-0">
+            <div className="relative flex items-center justify-center max-w-full max-h-full">
+              <svg width="1600" height="900" className="w-auto h-auto max-w-full max-h-full opacity-0 pointer-events-none select-none shrink-0" />
+              <div className="absolute inset-0 w-full h-full">
+                <SlideCanvas
+                  slide={activeSlideData}
+                  slideNumber={currentSlide + 1}
+                  selectedElementId={selectedElementId}
+                  defaultBackground={presentation.defaultBackground}
+                  onSelectElement={(id) => {
+                    setSelectedElementId(id);
+                    if (id) setIsEditOpen(true);
+                  }}
+                  onDoubleClickElement={(el) => { setActiveModalType(el.type as ModalType); setEditingElement(el); }}
+                  onUpdateElement={(id, updates) => updateElement(presentation.id, activeSlideData.id, id, updates)}
+                  onDeleteElement={(id) => deleteElement(presentation.id, activeSlideData.id, id)}
+                />
+              </div>
+            </div>
           </div>
         </div>
 

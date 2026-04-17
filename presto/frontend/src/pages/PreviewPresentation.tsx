@@ -54,23 +54,28 @@ export const PreviewPresentation: React.FC = () => {
   return (
     <div className="w-screen h-screen bg-black flex flex-col overflow-hidden select-none">
       {/* Full-screen slide */}
-      <div className="flex-1 relative">
+      <div className="flex-1 relative flex items-center justify-center overflow-hidden min-h-0">
         <div
           key={activeSlide.id}
-          className={`absolute inset-0 slide-transition-${transitionDirection}`}
+          className={`absolute inset-0 flex items-center justify-center slide-transition-${transitionDirection}`}
         >
-          <SlideCanvas
-            slide={activeSlide}
-            slideNumber={currentSlide + 1}
-            selectedElementId={null}
-            isEditable={false}
-            isPreview={true}
-            defaultBackground={presentation.defaultBackground}
-            onSelectElement={() => { }}
-            onDoubleClickElement={() => { }}
-            onUpdateElement={() => { }}
-            onDeleteElement={() => { }}
-          />
+          <div className="relative flex items-center justify-center max-w-full max-h-full">
+            <svg width="1600" height="900" className="w-auto h-auto max-w-full max-h-full opacity-0 pointer-events-none select-none shrink-0" />
+            <div className="absolute inset-0 w-full h-full">
+              <SlideCanvas
+                slide={activeSlide}
+                slideNumber={currentSlide + 1}
+                selectedElementId={null}
+                isEditable={false}
+                isPreview={true}
+                defaultBackground={presentation.defaultBackground}
+                onSelectElement={() => { }}
+                onDoubleClickElement={() => { }}
+                onUpdateElement={() => { }}
+                onDeleteElement={() => { }}
+              />
+            </div>
+          </div>
         </div>
       </div>
 
