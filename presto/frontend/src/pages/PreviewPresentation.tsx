@@ -18,6 +18,7 @@ export const PreviewPresentation: React.FC = () => {
   const isLastSlide = currentSlide >= slideCount - 1;
 
   const navigateSlide = useCallback((dir: 'prev' | 'next') => {
+    // Track direction so the slide animation matches navigation.
     setCurrentSlide((prev) => {
       setTransitionDirection(dir);
       if (dir === 'prev' && prev > 0) return prev - 1;

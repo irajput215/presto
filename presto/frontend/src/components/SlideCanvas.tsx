@@ -27,6 +27,7 @@ export const SlideCanvas: React.FC<SlideCanvasProps> = ({
   slideNumber,
   defaultBackground
 }) => {
+  // Pick the slide background before rendering elements.
   const bg = slide.background || defaultBackground || null;
   let bgStyle: React.CSSProperties = { backgroundColor: '#ffffff' };
 
@@ -41,6 +42,7 @@ export const SlideCanvas: React.FC<SlideCanvasProps> = ({
   }
 
   const handleCanvasClick = (e: React.MouseEvent) => {
+    // Clicking empty canvas clears the selected element.
     if (e.target === e.currentTarget) {
       onSelectElement(null);
     }
@@ -59,6 +61,7 @@ export const SlideCanvas: React.FC<SlideCanvasProps> = ({
       )}
 
       {slide.elements.map(element => (
+        // Each element is placed by percentage on the slide.
         <ElementBlock
           key={element.id}
           element={element}

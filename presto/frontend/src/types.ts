@@ -14,6 +14,7 @@ export type BackgroundStyle = {
 };
 
 export type TextElement = {
+  // Text box stored on a slide.
   id: string;
   type: 'text';
   x: number;
@@ -58,6 +59,7 @@ export type CodeLanguage = 'c' | 'python' | 'javascript' | 'latex';
 export type CodeTheme = 'vs-dark' | 'monokai' | 'ally-dark' | 'ally-light' | 'solarized';
 
 export type CodeElement = {
+  // Code block with detected language and display options.
   id: string;
   type: 'code';
   x: number;
@@ -89,6 +91,7 @@ export type PresentationHistoryEntry = {
 };
 
 export type Presentation = {
+  // Full deck saved inside the backend store.
   id: string;
   name: string;
   description: string;

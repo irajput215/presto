@@ -19,6 +19,7 @@ interface StoreContextType {
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
 const createEmptySlide = (): Slide => ({
+  // New decks start with one blank slide.
   id: uuidv4(),
   background: null,
   elements: [],
@@ -30,6 +31,7 @@ const cloneSlides = (slides: Slide[]): Slide[] =>
   JSON.parse(JSON.stringify(slides)) as Slide[];
 
 const withRevisionSnapshot = (presentation: Presentation): Presentation => {
+  // Keep history snapshots spaced out to avoid saving too often.
   const now = Date.now();
   const history = presentation.history || [];
   const latestSnapshot = history[0];
@@ -59,6 +61,7 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const { showError } = useError();
 
   const fetchStore = useCallback(async () => {
+    // Load this user's saved presentations from the backend store.
     if (!token) {
       setPresentations([]);
       setIsLoading(false);
@@ -86,6 +89,7 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   }, [fetchStore]);
 
   const saveStore = async (newPresentations: Presentation[]) => {
+    // Save the whole presentation list because the backend stores one blob.
     if (!token) return;
     try {
       const payload: StorePayload = { presentations: newPresentations };
@@ -116,6 +120,7 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   };
 
   const updatePresentation = async (id: string, updates: Partial<Presentation>) => {
+    // Snapshot before changing a deck so history can restore it later.
     const newPresentations = presentations.map((p) =>
       p.id === id ? { ...withRevisionSnapshot(p), ...updates, updatedAt: Date.now() } : p
     );

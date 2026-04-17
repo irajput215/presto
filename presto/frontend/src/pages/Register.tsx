@@ -17,6 +17,7 @@ export const Register: React.FC = () => {
   const { showError, clearErrors } = useError();
 
   const handleRegister = async (e: React.FormEvent) => {
+    // Check matching passwords before calling the backend.
     e.preventDefault();
     if (password !== confirmPassword) {
       showError("Passwords do not match");

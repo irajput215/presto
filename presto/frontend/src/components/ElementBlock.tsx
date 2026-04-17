@@ -34,6 +34,7 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
   const [isResizing, setIsResizing] = useState<string | null>(null);
 
   useEffect(() => {
+    // Keep local drag state in sync with saved element data.
     if (!isDragging && !isResizing) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setLocalStyle({
@@ -46,11 +47,13 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
   }, [element, isDragging, isResizing]);
 
   const handleContextMenu = (e: MouseEvent) => {
+    // Right-click deletes an element.
     e.preventDefault();
     onDelete();
   };
 
   const handleMouseDown = (e: MouseEvent) => {
+    // Dragging updates x/y as slide percentages.
     if (!isSelected) {
       onSelect();
     }
@@ -98,6 +101,7 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
   };
 
   const handleResizeDown = (e: MouseEvent, corner: string) => {
+    // Resize from the selected corner while staying inside the slide.
     e.stopPropagation();
     setIsResizing(corner);
 
@@ -158,6 +162,7 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
   };
 
   const renderContent = () => {
+    // Render each element with the correct viewer for its type.
     switch (element.type) {
       case 'text':
         return (
@@ -210,6 +215,7 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
         );
       }
       case 'code': {
+        // Theme colors are kept near the code renderer.
         const themes: Record<string, { bg: string; plain: string; keyword: string; string: string; comment: string; number: string }> = {
           'vs-dark':     { bg: '#1e1e1e', plain: '#d4d4d4', keyword: '#569cd6', string: '#ce9178', comment: '#6a9955', number: '#b5cea8' },
           'monokai':     { bg: '#272822', plain: '#f8f8f2', keyword: '#f92672', string: '#e6db74', comment: '#75715e', number: '#ae81ff' },

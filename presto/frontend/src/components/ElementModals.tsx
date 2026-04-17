@@ -30,6 +30,7 @@ const DimensionInputs = ({
 );
 
 export const TextModal = ({ element, onClose, onSave }: { element?: TextElement, onClose: () => void, onSave: (el: TextElement) => void }) => {
+  // Start with existing values when editing.
   const [text, setText] = useState(element?.text || '');
   const [fontSize, setFontSize] = useState(element?.fontSize || 1);
   const [color, setColor] = useState(element?.color || '#000000');
@@ -41,6 +42,7 @@ export const TextModal = ({ element, onClose, onSave }: { element?: TextElement,
   const [height, setHeight] = useState(element?.height || 20);
 
   const handleSubmit = (e: React.FormEvent) => {
+    // Save text settings back to the slide.
     e.preventDefault();
     onSave({
       id: element?.id || Date.now().toString(),
@@ -207,6 +209,7 @@ export const VideoModal = ({ element, onClose, onSave }: { element?: VideoElemen
 };
 
 export const CodeModal = ({ element, onClose, onSave }: { element?: CodeElement, onClose: () => void, onSave: (el: CodeElement) => void }) => {
+  // Language is detected from the code text.
   const [code, setCode] = useState(element?.code || '');
   const [fontSize, setFontSize] = useState(element?.fontSize || 1);
 
@@ -215,6 +218,7 @@ export const CodeModal = ({ element, onClose, onSave }: { element?: CodeElement,
   const detectedLanguage = code.trim() ? detectLanguage(code) : element?.language || 'javascript';
 
   const handleSubmit = (e: React.FormEvent) => {
+    // Save detected language with the code block.
     e.preventDefault();
     onSave({
       id: element?.id || Date.now().toString(),

@@ -11,6 +11,7 @@ export const MainLayout: React.FC = () => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
+    // Tell backend first, then clear frontend auth either way.
     try {
       if (token) {
         await apiCall('/admin/auth/logout', 'POST', {}, token);
@@ -24,6 +25,7 @@ export const MainLayout: React.FC = () => {
   };
 
   return (
+    // Shared shell for pages that require login.
     <div className="flex flex-col min-h-screen bg-gray-50 text-gray-900 w-full">
       <header className="bg-white shadow-sm px-6 py-4 flex justify-between items-center sticky top-0 z-10 w-full">
         <h1 

@@ -21,6 +21,7 @@ export const ErrorProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   const showError = useCallback((message: string) => {
     const newId = uuidv4();
+    // Show the latest error and remove it after a short delay.
     setErrors([{ id: newId, message }]);
     
     setTimeout(() => {

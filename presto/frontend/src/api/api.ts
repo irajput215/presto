@@ -2,6 +2,7 @@ import BACKEND_CONFIG from '../../backend.config.json';
 
 const BASE_URL = `http://localhost:${BACKEND_CONFIG.BACKEND_PORT}`;
 
+// Shared fetch helper for all backend requests.
 export const apiCall = async (path: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE', body?: any, token?: string | null) => {
   const options: RequestInit = {
     method,
@@ -12,6 +13,7 @@ export const apiCall = async (path: string, method: 'GET' | 'POST' | 'PUT' | 'DE
   };
 
   if (body) {
+    // Only send JSON when a request has a body.
     options.body = JSON.stringify(body);
   }
 

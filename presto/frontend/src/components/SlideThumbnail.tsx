@@ -15,6 +15,7 @@ export const SlideThumbnail: React.FC<SlideThumbnailProps> = ({
   defaultBackground,
   showLabel = true,
 }) => (
+  // Small read-only slide preview for dashboard and slide panel.
   <div className="relative aspect-[16/9] w-full overflow-hidden rounded border border-gray-200 bg-white shadow-inner">
     <div className="absolute inset-0 pointer-events-none text-[2px]">
       <SlideCanvas

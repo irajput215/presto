@@ -15,13 +15,14 @@ export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Modal Form State
+  // Form state for creating a new deck.
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [thumbnail, setThumbnail] = useState('');
   const [thumbnailMode, setThumbnailMode] = useState<ThumbnailMode>('auto');
 
   const handleThumbnailUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Store uploaded thumbnail as a data URL.
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -33,6 +34,7 @@ export const Dashboard: React.FC = () => {
   };
 
   const handleCreate = async (e: React.FormEvent) => {
+    // Empty thumbnail means the card will use first-slide preview.
     e.preventDefault();
     if (!name.trim()) return;
 
@@ -45,8 +47,7 @@ export const Dashboard: React.FC = () => {
     setThumbnail('');
     setThumbnailMode('auto');
     
-    // Automatically navigate to it if needed? Actually spec doesn't say auto-navigate on create, 
-    // it says "appears on the dashboard". Let's just stay on dashboard.
+    // Stay on dashboard so the new card is visible.
   };
 
   return (

@@ -14,6 +14,7 @@ export const Login: React.FC = () => {
   const { showError, clearErrors } = useError();
 
   const handleLogin = async (e: React.FormEvent) => {
+    // Login returns a token used by protected pages.
     e.preventDefault();
     try {
       const data = await apiCall('/admin/auth/login', 'POST', { email, password });
