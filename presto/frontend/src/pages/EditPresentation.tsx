@@ -1,5 +1,8 @@
+// External libraries and hooks
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+
+// Project hooks and components
 import { useStore } from '../context/StoreContext';
 import { useError } from '../context/ErrorContext';
 import { SlideCanvas } from '../components/SlideCanvas';
@@ -8,12 +11,16 @@ import { Modal } from '../components/Modal';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { TextModal, ImageModal, VideoModal, CodeModal } from '../components/ElementModals';
+
+// Type definitions
 import type { BackgroundKind, BackgroundStyle, CodeElement, ImageElement, PresentationHistoryEntry, SlideElement, TextElement, VideoElement, CodeLanguage, CodeTheme } from '../types';
 
+/** Simple union types for component state */
 type ModalType = 'text' | 'image' | 'video' | 'code' | null;
 type ThumbnailMode = 'auto' | 'url' | 'upload';
 
-/* ── SVG Icons ───────────────────────────────────────── */
+/* ── UI Icons ───────────────────────────────────────── */
+
 const IconText = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7V4h16v3" /><line x1="12" y1="4" x2="12" y2="20" /><line x1="8" y1="20" x2="16" y2="20" /></svg>;
 const IconImage = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="m21 15-5-5L5 21" /></svg>;
 const IconVideo = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7" /><rect x="1" y="5" width="15" height="14" rx="2" /></svg>;
@@ -21,7 +28,9 @@ const IconCode = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="non
 const IconPanel = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><line x1="9" y1="3" x2="9" y2="21" /></svg>;
 const IconSliders = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="21" x2="4" y2="14" /><line x1="4" y1="10" x2="4" y2="3" /><line x1="12" y1="21" x2="12" y2="12" /><line x1="12" y1="8" x2="12" y2="3" /><line x1="20" y1="21" x2="20" y2="16" /><line x1="20" y1="12" x2="20" y2="3" /><line x1="1" y1="14" x2="7" y2="14" /><line x1="9" y1="8" x2="15" y2="8" /><line x1="17" y1="16" x2="23" y2="16" /></svg>;
 
-/* ── Inline Editor Forms ─────────────────────────────── */
+/* ── Inline Editor Form Fragments ────────────────────── */
+
+/** Dimension and position editor for the sidebar */
 const SidebarDimensions = ({ el, onChange }: { el: SlideElement; onChange: (u: Partial<SlideElement>) => void }) => {
   const field = (lbl: string, key: 'width' | 'height' | 'x' | 'y', min: number) => (
     <div>
@@ -36,6 +45,7 @@ const SidebarDimensions = ({ el, onChange }: { el: SlideElement; onChange: (u: P
   );
 };
 
+/** Text element specific sidebar fields */
 const SidebarTextFields = ({ el, onChange }: { el: TextElement; onChange: (u: Partial<TextElement>) => void }) => (
   <div className="flex flex-col gap-3 mt-4">
     <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">Text</label><textarea value={el.text} onChange={e => onChange({ text: e.target.value })} className="w-full min-h-[60px] p-1.5 text-xs border rounded outline-none resize-y" /></div>
@@ -83,6 +93,7 @@ const SidebarTextFields = ({ el, onChange }: { el: TextElement; onChange: (u: Pa
   </div>
 );
 
+/** Image element specific sidebar fields with file upload support */
 const SidebarImageFields = ({ el, onChange }: { el: ImageElement; onChange: (u: Partial<ImageElement>) => void }) => {
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -126,6 +137,7 @@ const SidebarImageFields = ({ el, onChange }: { el: ImageElement; onChange: (u: 
   );
 };
 
+/** Video element specific sidebar fields (YouTube focus) */
 const SidebarVideoFields = ({ el, onChange }: { el: VideoElement; onChange: (u: Partial<VideoElement>) => void }) => (
   <div className="flex flex-col gap-3 mt-4">
     <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">YouTube URL</label><input type="text" value={el.src} onChange={e => onChange({ src: e.target.value })} className="w-full px-1.5 py-1 text-xs border rounded outline-none" /></div>
@@ -133,6 +145,7 @@ const SidebarVideoFields = ({ el, onChange }: { el: VideoElement; onChange: (u: 
   </div>
 );
 
+/** Code snippet area specific sidebar fields with themes and frame options */
 const SidebarCodeFields = ({ el, onChange }: { el: CodeElement; onChange: (u: Partial<CodeElement>) => void }) => {
   return (
     <div className="flex flex-col gap-3 mt-4">
@@ -181,42 +194,49 @@ const SidebarCodeFields = ({ el, onChange }: { el: CodeElement; onChange: (u: Pa
   );
 };
 
+/* ── MAIN EDITING COMPONENT ─────────────────────────── */
+
 export const EditPresentation: React.FC = () => {
+  // Logic hooks
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { presentations, updatePresentation, deletePresentation, addElement, updateElement, deleteElement } = useStore();
   const { showError } = useError();
 
+  // Data state
   const presentation = presentations.find((p) => p.id === id);
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSlide = Math.max(0, parseInt(searchParams.get('slide') || '1', 10) - 1);
   const [currentSlide, setCurrentSlide] = useState(initialSlide);
 
+  // UI state toggles
   const [isEditDetailsOpen, setIsEditDetailsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
   const [activeModalType, setActiveModalType] = useState<ModalType>(null);
   const [editingElement, setEditingElement] = useState<SlideElement | null>(null);
-
   const [isToolsOpen, setIsToolsOpen] = useState(true);
   const [isEditOpen, setIsEditOpen] = useState(true);
   const [isBgModalOpen, setIsBgModalOpen] = useState(false);
   const [isSlidePanelOpen, setIsSlidePanelOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+
+  // Drag and drop state
   const [draggedSlideIndex, setDraggedSlideIndex] = useState<number | null>(null);
   const [dragOverSlideIndex, setDragOverSlideIndex] = useState<number | null>(null);
 
+  // Details editing state
   const [editName, setEditName] = useState('');
   const [editThumbnail, setEditThumbnail] = useState('');
   const [editDescription, setEditDescription] = useState('');
   const [editThumbnailMode, setEditThumbnailMode] = useState<ThumbnailMode>('auto');
 
-  // Sync slide number to URL
+  // Sync current slide index to the URL query parameter
   useEffect(() => {
     setSearchParams({ slide: String(currentSlide + 1) }, { replace: true });
   }, [currentSlide, setSearchParams]);
 
+  /** Helper to navigate slides with boundary protection */
   const navigateSlide = useCallback((direction: 'next' | 'prev') => {
     if (!presentation) return;
     if (direction === 'next' && currentSlide < presentation.slides.length - 1) {
@@ -229,8 +249,10 @@ export const EditPresentation: React.FC = () => {
     }
   }, [presentation, currentSlide]);
 
+  // Keyboard navigation listener
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if typing in an input
       if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return;
       if (e.key === 'ArrowRight') navigateSlide('next');
       if (e.key === 'ArrowLeft') navigateSlide('prev');
@@ -239,6 +261,7 @@ export const EditPresentation: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [navigateSlide]);
 
+  // Handle case where presentation data is not (yet) available
   if (!presentation) {
     return (
       <div className="flex flex-col items-center justify-center p-20 gap-4">
@@ -248,13 +271,16 @@ export const EditPresentation: React.FC = () => {
     );
   }
 
+  // Pre-calculated data for convenient access in JSX
   const slideCount = presentation.slides.length;
   const isFirstSlide = currentSlide === 0;
   const isLastSlide = currentSlide === slideCount - 1;
   const activeSlideData = presentation.slides[currentSlide];
-
   const selectedEl = activeSlideData.elements.find(e => e.id === selectedElementId) || null;
 
+  /* ── Event Handlers ────────────────────────────────── */
+
+  /** Updates general metadata like title and thumbnail */
   const handleUpdateDetails = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editName.trim()) return;
@@ -270,6 +296,7 @@ export const EditPresentation: React.FC = () => {
     }
   };
 
+  /** Irreversible deletion of the current presentation */
   const handleDeleteConfirmed = async () => {
     try {
       await deletePresentation(presentation.id);
@@ -280,6 +307,7 @@ export const EditPresentation: React.FC = () => {
     }
   };
 
+  /** Inserts a new slide with a default title element */
   const handleAddSlide = async () => {
     const newSlide = {
       id: Date.now().toString(),
@@ -305,6 +333,7 @@ export const EditPresentation: React.FC = () => {
     setCurrentSlide(presentation.slides.length);
   };
 
+  /** Removes current slide (blocks if it's the only one left) */
   const handleDeleteSlide = async () => {
     if (slideCount === 1) {
       showError("Cannot delete the only slide! Please delete the presentation instead.");
@@ -317,6 +346,7 @@ export const EditPresentation: React.FC = () => {
     }
   };
 
+  /** Populates details fields for the edit modal */
   const handleOpenDetailsModal = () => {
     setEditName(presentation.name);
     setEditThumbnail(presentation.thumbnail);
@@ -325,6 +355,7 @@ export const EditPresentation: React.FC = () => {
     setIsEditDetailsOpen(true);
   };
 
+  /** Reads a local file as Base64 for a custom thumbnail */
   const handleEditThumbnailUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -336,6 +367,7 @@ export const EditPresentation: React.FC = () => {
     reader.readAsDataURL(file);
   };
 
+  /** Primary handler for creating or updating slide elements (text, image, etc.) */
   const handleSaveElement = async (el: SlideElement) => {
     try {
       if (editingElement) {
@@ -353,10 +385,12 @@ export const EditPresentation: React.FC = () => {
     }
   };
 
+  /** Silent update handler for element changes triggered from the sidebar side panels */
   const handleInlineUpdate = async (updates: Partial<SlideElement>) => {
     if (!selectedEl) return;
     try {
       const finalUpdates = { ...updates } as Partial<SlideElement> & { src?: string };
+      // Handle YouTube short-links to embed format
       if (finalUpdates.src && finalUpdates.src.includes('watch?v=')) {
         finalUpdates.src = finalUpdates.src.replace('watch?v=', 'embed/');
       }
@@ -366,6 +400,7 @@ export const EditPresentation: React.FC = () => {
     }
   };
 
+  /** Clones existing element with a slight offset */
   const handleDuplicate = async () => {
     if (!selectedEl) return;
     const highestLayer = activeSlideData.elements.reduce((max, el) => Math.max(max, el.layer || 0), 0);
@@ -374,6 +409,7 @@ export const EditPresentation: React.FC = () => {
     setSelectedElementId(clone.id);
   };
 
+  /** Logical slide reordering */
   const moveSlide = async (fromIndex: number, toIndex: number) => {
     if (fromIndex === toIndex || fromIndex < 0 || fromIndex >= slideCount) return;
     const slides = [...presentation.slides];
@@ -385,6 +421,7 @@ export const EditPresentation: React.FC = () => {
     setSelectedElementId(null);
   };
 
+  /** Finalize slide drag-and-drop */
   const handleSlideDrop = async (dropIndex: number) => {
     if (draggedSlideIndex === null) return;
     await moveSlide(draggedSlideIndex, dropIndex);
@@ -392,6 +429,7 @@ export const EditPresentation: React.FC = () => {
     setDragOverSlideIndex(null);
   };
 
+  /** Restores the deck to a previous points-in-time snapshot */
   const handleRestoreHistory = async (entry: PresentationHistoryEntry) => {
     const restoredSlides = JSON.parse(JSON.stringify(entry.slides));
     await updatePresentation(presentation.id, {
@@ -403,6 +441,7 @@ export const EditPresentation: React.FC = () => {
     setIsHistoryOpen(false);
   };
 
+  /** Human friendly date formatting */
   const formatHistoryTime = (timestamp: number) =>
     new Intl.DateTimeFormat(undefined, {
       dateStyle: 'medium',
@@ -413,7 +452,7 @@ export const EditPresentation: React.FC = () => {
   return (
     <div className="flex flex-col h-screen w-full bg-gray-50 overflow-hidden">
 
-      {/* ── UNTOUCHED TOP BAR ───────────────────────── */}
+      {/* ── TOP HEADER BAR ───────────────────────── */}
       <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 shrink-0">
         <div className="flex items-center gap-4">
           <Button variant="secondary" onClick={() => navigate('/dashboard')}>
@@ -474,10 +513,10 @@ export const EditPresentation: React.FC = () => {
         </div>
       </header>
 
-      {/* ── LOWER SECTION ───────────────────────────── */}
+      {/* ── CENTRAL WORKSPACE ───────────────────────── */}
       <div className="flex-1 flex overflow-hidden">
 
-        {/* 1. Thin Left Icon Bar (Add Element Bar only) */}
+        {/* 1. Left Add Element Toolset */}
         {isToolsOpen && (
           <div className="w-14 bg-white border-r border-gray-200 flex flex-col items-center py-4 z-30 shrink-0 gap-3 transition-all duration-300">
             <button title="Add Text" onClick={() => { setActiveModalType('text'); setEditingElement(null); }} className="w-10 h-10 flex items-center justify-center rounded text-blue-600 hover:bg-blue-50 transition-colors"><IconText /></button>
@@ -487,7 +526,7 @@ export const EditPresentation: React.FC = () => {
           </div>
         )}
 
-        {/* 2. Thin Edit Side Bar (Inline Edit Bar next to Icon Bar) */}
+        {/* 2. Secondary Element Properties Sidebar */}
         {isEditOpen && (
           <div className="w-[180px] bg-[#fafafa] border-r border-gray-200 flex flex-col z-20 shrink-0 shadow-[2px_0_10px_rgba(0,0,0,0.02)] overflow-y-auto transition-all duration-300">
             {selectedEl ? (
@@ -519,6 +558,7 @@ export const EditPresentation: React.FC = () => {
                 </div>
               </div>
             ) : (
+              // Case when no element is selected on the current slide
               <div className="flex-1 flex flex-col items-center justify-center px-4 text-center text-gray-400 bg-[#fafafa]">
                 <div className="w-12 h-12 mb-3 rounded-full bg-gray-100 flex items-center justify-center">
                   <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -531,9 +571,9 @@ export const EditPresentation: React.FC = () => {
           </div>
         )}
 
-        {/* 3. Massive Canvas Area */}
+        {/* 3. Main Slide Canvas Area */}
         <div className="flex-1 bg-gray-100 relative flex flex-col overflow-hidden">
-          {/* Floating Controls for slide nav */}
+          {/* Quick Nav floating buttons */}
           {slideCount > 1 && (
             <div className="absolute bottom-4 right-4 flex gap-2 z-20">
               {!isFirstSlide && (
@@ -557,7 +597,7 @@ export const EditPresentation: React.FC = () => {
             </div>
           )}
 
-          {/* Background/Theme Button */}
+          {/* Floating Appearance/Theme Settings trigger */}
           <button
             onClick={() => setIsBgModalOpen(true)}
             className="absolute top-3 right-3 z-20 p-2 bg-white/80 hover:bg-white border border-gray-200 rounded-lg shadow-sm transition-colors backdrop-blur-sm"
@@ -566,7 +606,7 @@ export const EditPresentation: React.FC = () => {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r="0.5" fill="currentColor" /><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor" /><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor" /><circle cx="6.5" cy="12.5" r="0.5" fill="currentColor" /><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z" /></svg>
           </button>
 
-          {/* Scrolling Canvas */}
+          {/* Actual Slide Content Viewer */}
           <div className="w-full h-full overflow-hidden">
             <SlideCanvas
               slide={activeSlideData}
@@ -586,6 +626,9 @@ export const EditPresentation: React.FC = () => {
 
       </div>
 
+      {/* ── MODALS & OVERLAYS ───────────────────────── */}
+
+      {/* Edit General Info Modal */}
       {isEditDetailsOpen && (
         <Modal title="Edit Presentation Details" onClose={() => setIsEditDetailsOpen(false)}>
           <form onSubmit={handleUpdateDetails} className="flex flex-col gap-4">
@@ -659,6 +702,7 @@ export const EditPresentation: React.FC = () => {
         </Modal>
       )}
 
+      {/* Delete Confirmation Modal */}
       {isDeleteOpen && (
         <Modal title="Are you sure?" onClose={() => setIsDeleteOpen(false)}>
           <p className="text-sm text-gray-600 mb-6">Do you really want to delete this presentation? This action cannot be undone.</p>
@@ -669,11 +713,13 @@ export const EditPresentation: React.FC = () => {
         </Modal>
       )}
 
+      {/* Element Creation Modals (Text, Image, etc.) */}
       {activeModalType === 'text' && <TextModal element={editingElement?.type === 'text' ? editingElement as TextElement : undefined} onClose={() => { setActiveModalType(null); setEditingElement(null); }} onSave={handleSaveElement} />}
       {activeModalType === 'image' && <ImageModal element={editingElement?.type === 'image' ? editingElement as ImageElement : undefined} onClose={() => { setActiveModalType(null); setEditingElement(null); }} onSave={handleSaveElement} />}
       {activeModalType === 'video' && <VideoModal element={editingElement?.type === 'video' ? editingElement as VideoElement : undefined} onClose={() => { setActiveModalType(null); setEditingElement(null); }} onSave={handleSaveElement} />}
       {activeModalType === 'code' && <CodeModal element={editingElement?.type === 'code' ? editingElement as CodeElement : undefined} onClose={() => { setActiveModalType(null); setEditingElement(null); }} onSave={handleSaveElement} />}
 
+      {/* Rearranging / Drag and Drop Slide Panel */}
       {isSlidePanelOpen && (
         <Modal title="Slide Panel" onClose={() => setIsSlidePanelOpen(false)} maxWidthClassName="max-w-4xl">
           <div className="max-h-[70vh] overflow-y-auto pr-1">
@@ -753,6 +799,7 @@ export const EditPresentation: React.FC = () => {
         </Modal>
       )}
 
+      {/* Undo / Snapshot Restoration History Panel */}
       {isHistoryOpen && (
         <Modal title="Version History" onClose={() => setIsHistoryOpen(false)} maxWidthClassName="max-w-2xl">
           <div className="flex max-h-[70vh] flex-col gap-3 overflow-y-auto">
@@ -791,6 +838,7 @@ export const EditPresentation: React.FC = () => {
         </Modal>
       )}
 
+      {/* Global Background (Theme) Modal Editor */}
       {isBgModalOpen && (() => {
         const slideBg = activeSlideData.background;
         const defBg = presentation.defaultBackground;
@@ -853,11 +901,11 @@ export const EditPresentation: React.FC = () => {
                   </label>
                 </div>
               )}
-              {/* Preview */}
+              {/* Layout Preview for the Background Modal */}
               <div className="w-full h-12 rounded border border-gray-200 shadow-inner" style={
                 kind === 'solid' ? { backgroundColor: value } :
-                  kind === 'gradient' ? { background: value } :
-                    { backgroundImage: `url(${value})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                kind === 'gradient' ? { background: value } :
+                { backgroundImage: `url(${value})`, backgroundSize: 'cover', backgroundPosition: 'center' }
               } />
             </div>
           );

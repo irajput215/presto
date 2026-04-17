@@ -1,7 +1,11 @@
+// React hooks
 import React, { useState, useRef, useEffect, type MouseEvent } from 'react';
 import type { SlideElement } from '../types';
+
+// Helper for code highlighting
 import { highlightCode } from '../lib/syntaxHighlight';
 
+/** Props for a single interactive element block on a slide */
 interface ElementBlockProps {
   element: SlideElement;
   isSelected: boolean;
@@ -12,6 +16,11 @@ interface ElementBlockProps {
   isPreview?: boolean;
 }
 
+/**
+ * ElementBlock handles the local interactive state for a slide element.
+ * It manages dragging (movement), resizing (via corners), and specific rendering 
+ * logic for different media types (Text, Image, Video, Code).
+ */
 export const ElementBlock: React.FC<ElementBlockProps> = ({
   element,
   isSelected,
@@ -23,6 +32,7 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Local style state ensures smooth 60fps movement/resizing without waiting for context roundtrips
   const [localStyle, setLocalStyle] = useState({
     x: element.x,
     y: element.y,
@@ -33,9 +43,9 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState<string | null>(null);
 
+  /** Sync local style with remote element props when not actively manipulating */
   useEffect(() => {
     if (!isDragging && !isResizing) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLocalStyle({
         x: element.x,
         y: element.y,
@@ -45,17 +55,19 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
     }
   }, [element, isDragging, isResizing]);
 
+  /** Right-click to delete shortcut on individual blocks */
   const handleContextMenu = (e: MouseEvent) => {
     e.preventDefault();
     onDelete();
   };
+
+  /* ── DRAG LOGIC ────────────────────────────────────── */
 
   const handleMouseDown = (e: MouseEvent) => {
     if (!isSelected) {
       onSelect();
     }
     e.stopPropagation();
-
     setIsDragging(true);
 
     const parent = containerRef.current?.parentElement;
@@ -75,6 +87,7 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
       let newX = startObjX + dx;
       let newY = startObjY + dy;
 
+      // Coordinate clamping to keep element inside 0-100% bounds
       if (newX < 0) newX = 0;
       if (newY < 0) newY = 0;
       if (newX + localStyle.width > 100) newX = 100 - localStyle.width;
@@ -97,6 +110,8 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
     window.addEventListener('mouseup', handleMouseUp);
   };
 
+  /* ── RESIZE LOGIC ─────────────────────────────────── */
+
   const handleResizeDown = (e: MouseEvent, corner: string) => {
     e.stopPropagation();
     setIsResizing(corner);
@@ -117,22 +132,14 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
       const dx = ((moveEvent.clientX - startX) / parentW) * 100;
       const dy = ((moveEvent.clientY - startY) / parentH) * 100;
 
-      let newX = startObjX;
-      let newY = startObjY;
-      let newW = startObjW;
-      let newH = startObjH;
+      let newX = startObjX, newY = startObjY, newW = startObjW, newH = startObjH;
 
       if (corner.includes('e')) newW += dx;
       if (corner.includes('s')) newH += dy;
-      if (corner.includes('w')) {
-        newX += dx;
-        newW -= dx;
-      }
-      if (corner.includes('n')) {
-        newY += dy;
-        newH -= dy;
-      }
+      if (corner.includes('w')) { newX += dx; newW -= dx; }
+      if (corner.includes('n')) { newY += dy; newH -= dy; }
 
+      // Boundaries & minimum size checks
       if (newW < 1) { newW = 1; if (corner.includes('w')) newX = startObjX + startObjW - 1; }
       if (newH < 1) { newH = 1; if (corner.includes('n')) newY = startObjY + startObjH - 1; }
       if (newX < 0) { newW += newX; newX = 0; }
@@ -156,6 +163,8 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
   };
+
+  /* ── MEDIA RENDERERS ─────────────────────────────── */
 
   const renderContent = () => {
     switch (element.type) {
@@ -221,7 +230,7 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
         const langLabel: Record<string, string> = { javascript: 'JavaScript', python: 'Python', c: 'C', latex: 'LaTeX' };
         return (
           <div className="w-full h-full flex flex-col overflow-hidden pointer-events-none select-none font-mono" style={{ backgroundColor: t.bg }}>
-            {/* Frame title bar */}
+            {/* Standard window frame with status lights and language tag */}
             {element.showFrame !== false && (
               <div className="flex items-center gap-1.5 px-3 py-1.5 shrink-0" style={{ backgroundColor: t.bg, borderBottom: `1px solid ${t.comment}33` }}>
                 <span className="w-[10px] h-[10px] rounded-full bg-[#ff5f57]" />
@@ -230,7 +239,7 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
                 <span className="ml-auto text-[9px] font-semibold tracking-wider uppercase" style={{ color: t.comment }}>{langLabel[element.language] || element.language}</span>
               </div>
             )}
-            {/* Code body */}
+            {/* Syntax-highlighted code body */}
             <div
               style={{ fontSize: `${element.fontSize}em` }}
               className="flex-1 overflow-auto p-2"
@@ -286,6 +295,7 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
     >
       {renderContent()}
 
+      {/* Resizer handles only visible when element is selected in editor mode */}
       {!isPreview && isSelected && (
         <>
           <div className="absolute top-0 left-0 w-2 h-2 bg-blue-500 cursor-nwse-resize -translate-x-1/2 -translate-y-1/2" onMouseDown={(e) => handleResizeDown(e, 'nw')} />

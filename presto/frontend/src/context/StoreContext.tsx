@@ -1,10 +1,14 @@
+// React utilities
 import React, { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+
+// Shared utilities and contexts
 import { apiCall } from '../api/api';
 import { useAuth } from './AuthContext';
 import { useError } from './ErrorContext';
 import type { Presentation, StorePayload, Slide, SlideElement } from '../types';
 
+/** Interface for the centralized global store context */
 interface StoreContextType {
   presentations: Presentation[];
   isLoading: boolean;
@@ -18,17 +22,23 @@ interface StoreContextType {
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
+/* ── HELPERS ────────────────────────────────────────── */
+
+/** Generates a fresh blank slide template */
 const createEmptySlide = (): Slide => ({
   id: uuidv4(),
   background: null,
   elements: [],
 });
 
+/** Throttle duration to prevent history bloating (1 minute) */
 const HISTORY_INTERVAL_MS = 60 * 1000;
 
+/** Deep clones slide array for snapshotting */
 const cloneSlides = (slides: Slide[]): Slide[] =>
   JSON.parse(JSON.stringify(slides)) as Slide[];
 
+/** Injects a new undo-point if enough time has passed since the last one */
 const withRevisionSnapshot = (presentation: Presentation): Presentation => {
   const now = Date.now();
   const history = presentation.history || [];
@@ -52,12 +62,18 @@ const withRevisionSnapshot = (presentation: Presentation): Presentation => {
   };
 };
 
+/* ── PROVIDER ────────────────────────────────────────── */
+
 export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  // Global State
   const [presentations, setPresentations] = useState<Presentation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Context bridges
   const { token } = useAuth();
   const { showError } = useError();
 
+  /** Initial load of the shared remote store object */
   const fetchStore = useCallback(async () => {
     if (!token) {
       setPresentations([]);
@@ -72,7 +88,6 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         ? data.store 
         : { presentations: [] };
       
-      // Safety initialization
       setPresentations(payload.presentations || []);
     } catch (err: any) {
       showError(err.message || 'Failed to fetch store');
@@ -85,6 +100,7 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     fetchStore();
   }, [fetchStore]);
 
+  /** Persists current presentation array to the remote /store endpoint */
   const saveStore = async (newPresentations: Presentation[]) => {
     if (!token) return;
     try {
@@ -97,6 +113,9 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   };
 
+  /* ── ACTIONS ────────────────────────────────────────── */
+
+  /** Inserts a new deck at the start of the list */
   const createPresentation = async (name: string, description: string, thumbnail: string) => {
     const newPresentation: Presentation = {
       id: uuidv4(),
@@ -115,6 +134,7 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     return newPresentation.id;
   };
 
+  /** Updates attributes or slides of an existing deck */
   const updatePresentation = async (id: string, updates: Partial<Presentation>) => {
     const newPresentations = presentations.map((p) =>
       p.id === id ? { ...withRevisionSnapshot(p), ...updates, updatedAt: Date.now() } : p
@@ -122,11 +142,13 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     await saveStore(newPresentations);
   };
 
+  /** Removes a deck entirely from the remote persistent store */
   const deletePresentation = async (id: string) => {
     const newPresentations = presentations.filter((p) => p.id !== id);
     await saveStore(newPresentations);
   };
 
+  /** Injected helper for adding a single element into a specific slide */
   const addElement = async (presentationId: string, slideId: string, element: SlideElement) => {
     const newPresentations = presentations.map(p => {
       if (p.id !== presentationId) return p;
@@ -136,7 +158,6 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         updatedAt: Date.now(),
         slides: presentationWithHistory.slides.map(s => {
           if (s.id !== slideId) return s;
-          // Calculate next layer
           const nextLayer = s.elements.reduce((max, el) => Math.max(max, el.layer), 0) + 1;
           const newElement = { ...element, layer: nextLayer };
           return { ...s, elements: [...s.elements, newElement] };
@@ -146,6 +167,7 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     await saveStore(newPresentations);
   };
 
+  /** Modifies existing element properties by ID */
   const updateElement = async (presentationId: string, slideId: string, elementId: string, updates: Partial<SlideElement>) => {
     const newPresentations = presentations.map(p => {
       if (p.id !== presentationId) return p;
@@ -165,6 +187,7 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     await saveStore(newPresentations);
   };
 
+  /** Removes a single element from a slide's array */
   const deleteElement = async (presentationId: string, slideId: string, elementId: string) => {
     const newPresentations = presentations.map(p => {
       if (p.id !== presentationId) return p;
@@ -199,6 +222,7 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   );
 };
 
+// Convenience hook for accessing the presentation store
 export const useStore = () => {
   const context = useContext(StoreContext);
   if (!context) {

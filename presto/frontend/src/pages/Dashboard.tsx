@@ -1,26 +1,36 @@
+// External and store hooks
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../context/StoreContext';
 import { useAuth } from '../context/AuthContext';
+
+// Shared UI components
 import { PresentationCard } from '../components/PresentationCard';
 import { Modal } from '../components/Modal';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 
+/** Available options for setting a presentation thumbnail */
 type ThumbnailMode = 'auto' | 'url' | 'upload';
 
+/**
+ * Dashboard page showing the list of user presentations.
+ * Allows creating new presentations and navigating to the editor.
+ */
 export const Dashboard: React.FC = () => {
+  // Logic & State Hooks
   const { presentations, isLoading, createPresentation } = useStore();
   const { userName } = useAuth();
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Modal Form State
+  // New Presentation Form State
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [thumbnail, setThumbnail] = useState('');
   const [thumbnailMode, setThumbnailMode] = useState<ThumbnailMode>('auto');
 
+  /** Convert local file to Base64 for thumbnail upload */
   const handleThumbnailUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -32,6 +42,7 @@ export const Dashboard: React.FC = () => {
     reader.readAsDataURL(file);
   };
 
+  /** Call store to create a new presentation and reset form */
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
@@ -39,18 +50,17 @@ export const Dashboard: React.FC = () => {
     await createPresentation(name, description, thumbnailMode === 'auto' ? '' : thumbnail);
     setIsModalOpen(false);
     
-    // Clear out form
+    // Clear out form fields
     setName('');
     setDescription('');
     setThumbnail('');
     setThumbnailMode('auto');
-    
-    // Automatically navigate to it if needed? Actually spec doesn't say auto-navigate on create, 
-    // it says "appears on the dashboard". Let's just stay on dashboard.
   };
 
   return (
     <div className="flex flex-col gap-8 w-full max-w-6xl mx-auto px-4 py-8">
+      
+      {/* Page Header and Greeting */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <p className="text-sm font-semibold text-blue-600 mb-1">
@@ -64,11 +74,13 @@ export const Dashboard: React.FC = () => {
         </Button>
       </div>
 
+      {/* Main Content Area */}
       {isLoading ? (
         <div className="flex justify-center py-20 text-gray-500 text-sm">
           Loading presentations...
         </div>
       ) : presentations.length === 0 ? (
+        // Empty state when user has no presentations
         <div className="flex flex-col items-center justify-center py-24 px-4 bg-white border border-gray-100 rounded shadow-sm text-center">
           <div className="text-4xl mb-4">✨</div>
           <h3 className="text-lg font-bold text-gray-900 mb-1">No presentations yet</h3>
@@ -76,6 +88,7 @@ export const Dashboard: React.FC = () => {
           <Button onClick={() => setIsModalOpen(true)}>Create one now</Button>
         </div>
       ) : (
+        // Responsive grid of presentation cards
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {presentations.map((presentation) => (
             <PresentationCard 
@@ -87,6 +100,7 @@ export const Dashboard: React.FC = () => {
         </div>
       )}
 
+      {/* Creation Modal */}
       {isModalOpen && (
         <Modal title="Create new presentation" onClose={() => setIsModalOpen(false)}>
           <form onSubmit={handleCreate} className="flex flex-col gap-4">
@@ -101,8 +115,11 @@ export const Dashboard: React.FC = () => {
               value={description} 
               onChange={(e) => setDescription(e.target.value)} 
             />
+            
             <div className="flex flex-col gap-2">
               <span className="text-sm font-medium text-gray-700">Thumbnail</span>
+              
+              {/* Thumbnail type selector */}
               <div className="grid grid-cols-3 gap-2">
                 {([
                   ['auto', 'First slide'],
@@ -127,6 +144,7 @@ export const Dashboard: React.FC = () => {
                 ))}
               </div>
 
+              {/* Dynamic UI based on thumbnail mode */}
               {thumbnailMode === 'auto' && (
                 <p className="rounded bg-gray-50 px-3 py-2 text-xs text-gray-600">
                   The dashboard card will use a live mini-preview of the first slide.
@@ -161,6 +179,7 @@ export const Dashboard: React.FC = () => {
                 </div>
               )}
             </div>
+
             <div className="flex gap-3 justify-end mt-4">
               <Button type="button" variant="secondary" onClick={() => setIsModalOpen(false)}>
                 Cancel

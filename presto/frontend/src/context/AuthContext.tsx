@@ -1,6 +1,8 @@
+// External react hooks
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 
+/** Global authentication state management */
 interface AuthContextType {
   token: string | null;
   userName: string | null;
@@ -10,10 +12,16 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+/**
+ * Authentication provider that syncs token and user profiles 
+ * to localStorage for persistence across page refreshes.
+ */
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  // Sync state with localStorage on mount
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
   const [userName, setUserName] = useState<string | null>(() => localStorage.getItem('userName'));
 
+  /** Persist token changes to browser storage */
   useEffect(() => {
     if (token) {
       localStorage.setItem('token', token);
@@ -22,6 +30,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, [token]);
 
+  /** 
+   * Orchestrates login: saves token and tries to resolve user display name
+   * from email or previous session records.
+   */
   const login = (newToken: string, profile?: { name?: string; email?: string }) => {
     const savedNames = JSON.parse(localStorage.getItem('userNamesByEmail') || '{}') as Record<string, string>;
     const savedName = profile?.email ? savedNames[profile.email] : undefined;
@@ -31,6 +43,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setToken(newToken);
     setUserName(nextUserName);
 
+    // Cache Name-Email mapping to restore name even if backend doesn't return it next time
     if (profile?.email && profile?.name) {
       localStorage.setItem('userNamesByEmail', JSON.stringify({
         ...savedNames,
@@ -39,11 +52,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  /** Wipes session data from memory and storage */
   const logout = () => {
     setToken(null);
     setUserName(null);
   };
 
+  /** Persist userName changes to browser storage */
   useEffect(() => {
     if (userName) {
       localStorage.setItem('userName', userName);
@@ -59,6 +74,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   );
 };
 
+// Hook for easy access to auth state
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

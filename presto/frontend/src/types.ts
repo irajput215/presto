@@ -1,3 +1,4 @@
+// --- UI and Feedback ---
 export type NoticeTone = 'error' | 'success' | 'info';
 
 export type Notice = {
@@ -6,6 +7,7 @@ export type Notice = {
   tone: NoticeTone;
 };
 
+// --- Background Styling ---
 export type BackgroundKind = 'solid' | 'gradient' | 'image';
 
 export type BackgroundStyle = {
@@ -13,22 +15,26 @@ export type BackgroundStyle = {
   value: string;
 };
 
+// --- Slide Elements ---
+
+/** Represents a text block on a slide */
 export type TextElement = {
   id: string;
   type: 'text';
-  x: number;
-  y: number;
+  x: number; // Percentage (0-100)
+  y: number; // Percentage (0-100)
   width: number;
   height: number;
   layer: number;
   text: string;
-  fontSize: number;
+  fontSize: number; // In em
   color: string;
   backgroundColor?: string;
   textAlign?: 'left' | 'center' | 'right';
   fontFamily?: string;
 };
 
+/** Represents an image block on a slide */
 export type ImageElement = {
   id: string;
   type: 'image';
@@ -37,11 +43,12 @@ export type ImageElement = {
   width: number;
   height: number;
   layer: number;
-  src: string;
+  src: string; // URL or Base64
   alt: string;
-  rotation?: number;
+  rotation?: number; // In degrees
 };
 
+/** Represents a video block on a slide */
 export type VideoElement = {
   id: string;
   type: 'video';
@@ -50,13 +57,15 @@ export type VideoElement = {
   width: number;
   height: number;
   layer: number;
-  src: string;
+  src: string; // YouTube URL
   autoplay: boolean;
 };
 
+// Code element languages and themes
 export type CodeLanguage = 'c' | 'python' | 'javascript' | 'latex';
 export type CodeTheme = 'vs-dark' | 'monokai' | 'ally-dark' | 'ally-light' | 'solarized';
 
+/** Represents a code snippet area on a slide */
 export type CodeElement = {
   id: string;
   type: 'code';
@@ -70,17 +79,22 @@ export type CodeElement = {
   language: CodeLanguage;
   theme?: CodeTheme;
   showLineNumbers?: boolean;
-  showFrame?: boolean;
+  showFrame?: boolean; // MacOS-like window frame
 };
 
+// Union type for all elements that can exist on a slide
 export type SlideElement = TextElement | ImageElement | VideoElement | CodeElement;
 
+// --- Presentation Structure ---
+
+/** A single slide containing elements and background */
 export type Slide = {
   id: string;
   background: BackgroundStyle | null;
   elements: SlideElement[];
 };
 
+/** History entry for version control/undo */
 export type PresentationHistoryEntry = {
   id: string;
   savedAt: number;
@@ -88,6 +102,7 @@ export type PresentationHistoryEntry = {
   defaultBackground: BackgroundStyle;
 };
 
+/** The full presentation data model */
 export type Presentation = {
   id: string;
   name: string;
@@ -99,6 +114,8 @@ export type Presentation = {
   defaultBackground: BackgroundStyle;
   history?: PresentationHistoryEntry[];
 };
+
+// --- Authentication and Backend ---
 
 export type UserAccount = {
   id: string;
@@ -117,6 +134,8 @@ export type AppDatabase = {
   users: UserAccount[];
   session: Session | null;
 };
+
+// --- Drafts and Payloads ---
 
 export type PresentationDraft = {
   name: string;
