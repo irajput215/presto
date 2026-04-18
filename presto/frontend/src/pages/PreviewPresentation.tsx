@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useStore } from '../context/StoreContext';
 import { SlideCanvas } from '../components/SlideCanvas';
+import styles from './Transitions.module.css';
 
 export const PreviewPresentation: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -57,7 +58,7 @@ export const PreviewPresentation: React.FC = () => {
       <div className="flex-1 relative flex items-center justify-center overflow-hidden min-h-0">
         <div
           key={activeSlide.id}
-          className={`absolute inset-0 flex items-center justify-center slide-transition-${transitionDirection}`}
+          className={`absolute inset-0 flex items-center justify-center ${transitionDirection === 'next' ? styles.slideTransitionNext : styles.slideTransitionPrev}`}
         >
           <div className="relative flex items-center justify-center max-w-full max-h-full">
             <svg width="1600" height="900" className="w-auto h-auto max-w-full max-h-full opacity-0 pointer-events-none select-none shrink-0" />
