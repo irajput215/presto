@@ -1,5 +1,6 @@
 // External dependencies
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 // Context providers for global state
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -34,6 +35,15 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
  * Main application component that sets up routing and global providers.
  */
 function App() {
+  // Initialize dark mode theme globally on app load
+  useEffect(() => {
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
   return (
     <ErrorProvider>
       <AuthProvider>
