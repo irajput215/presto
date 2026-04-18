@@ -63,11 +63,11 @@ export const Dashboard: React.FC = () => {
       {/* Page Header and Greeting */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold text-blue-600 mb-1">
+          <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-1">
             {userName ? `Welcome, ${userName}` : 'Welcome'}
           </p>
-          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Presentations</h2>
-          <p className="text-sm text-gray-500 mt-1">Manage all your slide decks</p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">Presentations</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage all your slide decks</p>
         </div>
         <Button onClick={() => setIsModalOpen(true)}>
           New presentation
@@ -76,15 +76,15 @@ export const Dashboard: React.FC = () => {
 
       {/* Main Content Area */}
       {isLoading ? (
-        <div className="flex justify-center py-20 text-gray-500 text-sm">
+        <div className="flex justify-center py-20 text-gray-500 dark:text-gray-400 text-sm">
           Loading presentations...
         </div>
       ) : presentations.length === 0 ? (
         // Empty state when user has no presentations
-        <div className="flex flex-col items-center justify-center py-24 px-4 bg-white border border-gray-100 rounded shadow-sm text-center">
+        <div className="flex flex-col items-center justify-center py-24 px-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded shadow-sm text-center transition-colors">
           <div className="text-4xl mb-4">✨</div>
-          <h3 className="text-lg font-bold text-gray-900 mb-1">No presentations yet</h3>
-          <p className="text-sm text-gray-500 mb-6">Create your first presentation to get started.</p>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">No presentations yet</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Create your first presentation to get started.</p>
           <Button onClick={() => setIsModalOpen(true)}>Create one now</Button>
         </div>
       ) : (

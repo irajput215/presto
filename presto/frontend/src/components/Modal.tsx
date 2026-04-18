@@ -10,12 +10,12 @@ interface ModalProps {
 export const Modal: React.FC<ModalProps> = ({ title, onClose, children, maxWidthClassName = 'max-w-md' }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 sm:p-4 animate-in fade-in">
-      <div className={`bg-white rounded shadow-lg w-full ${maxWidthClassName} max-h-[95vh] flex flex-col overflow-hidden animate-in zoom-in-95`}>
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 shrink-0">
-          <h2 className="text-lg font-bold text-gray-900 leading-none">{title}</h2>
+      <div className={`bg-white dark:bg-gray-800 rounded shadow-lg w-full ${maxWidthClassName} max-h-[95vh] flex flex-col overflow-hidden animate-in zoom-in-95 transition-colors`}>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-700 shrink-0">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 leading-none">{title}</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-700 transition-colors p-1"
+            className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors p-1"
             aria-label="Close Modal"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">

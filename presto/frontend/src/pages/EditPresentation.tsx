@@ -35,7 +35,7 @@ const SidebarDimensions = ({ el, onChange }: { el: SlideElement; onChange: (u: P
   const field = (lbl: string, key: 'width' | 'height' | 'x' | 'y', min: number) => (
     <div>
       <label className="block text-[9px] font-bold text-gray-500 uppercase">{lbl}</label>
-      <input type="number" step="1" min={min} max="100" value={Math.floor(el[key])} onChange={e => onChange({ [key]: Number(e.target.value) })} className="w-full px-1.5 py-1 text-xs border rounded outline-none" />
+      <input type="number" step="1" min={min} max="100" value={Math.floor(el[key])} onChange={e => onChange({ [key]: Number(e.target.value) })} className="w-full px-1.5 py-1 text-xs border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded outline-none transition-colors" />
     </div>
   );
   return (
@@ -48,25 +48,25 @@ const SidebarDimensions = ({ el, onChange }: { el: SlideElement; onChange: (u: P
 /** Text element specific sidebar fields */
 const SidebarTextFields = ({ el, onChange }: { el: TextElement; onChange: (u: Partial<TextElement>) => void }) => (
   <div className="flex flex-col gap-3 mt-4">
-    <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">Text</label><textarea value={el.text} onChange={e => onChange({ text: e.target.value })} className="w-full min-h-[60px] p-1.5 text-xs border rounded outline-none resize-y" /></div>
+    <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">Text</label><textarea value={el.text} onChange={e => onChange({ text: e.target.value })} className="w-full min-h-[60px] p-1.5 text-xs border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded outline-none resize-y transition-colors" /></div>
     <div className="flex flex-col gap-3">
       <div>
         <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Align</label>
         <div className="flex gap-1">
-          <button onClick={() => onChange({ textAlign: 'left' })} className={`flex-1 py-1.5 flex items-center justify-center border rounded transition-colors ${el.textAlign === 'left' || !el.textAlign ? 'bg-blue-600 border-blue-600 text-white shadow-sm' : 'bg-white hover:bg-gray-100 text-gray-600 border-gray-200'}`} title="Align Left">
+          <button onClick={() => onChange({ textAlign: 'left' })} className={`flex-1 py-1.5 flex items-center justify-center border rounded transition-colors ${el.textAlign === 'left' || !el.textAlign ? 'bg-blue-600 border-blue-600 text-white shadow-sm' : 'bg-white hover:bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 dark:border-gray-700'}`} title="Align Left">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="17" y1="10" x2="3" y2="10" /><line x1="21" y1="6" x2="3" y2="6" /><line x1="17" y1="14" x2="3" y2="14" /><line x1="21" y1="18" x2="3" y2="18" /></svg>
           </button>
-          <button onClick={() => onChange({ textAlign: 'center' })} className={`flex-1 py-1.5 flex items-center justify-center border rounded transition-colors ${el.textAlign === 'center' ? 'bg-blue-600 border-blue-600 text-white shadow-sm' : 'bg-white hover:bg-gray-100 text-gray-600 border-gray-200'}`} title="Align Center">
+          <button onClick={() => onChange({ textAlign: 'center' })} className={`flex-1 py-1.5 flex items-center justify-center border rounded transition-colors ${el.textAlign === 'center' ? 'bg-blue-600 border-blue-600 text-white shadow-sm' : 'bg-white hover:bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 dark:border-gray-700'}`} title="Align Center">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="10" x2="6" y2="10" /><line x1="21" y1="6" x2="3" y2="6" /><line x1="18" y1="14" x2="6" y2="14" /><line x1="21" y1="18" x2="3" y2="18" /></svg>
           </button>
-          <button onClick={() => onChange({ textAlign: 'right' })} className={`flex-1 py-1.5 flex items-center justify-center border rounded transition-colors ${el.textAlign === 'right' ? 'bg-blue-600 border-blue-600 text-white shadow-sm' : 'bg-white hover:bg-gray-100 text-gray-600 border-gray-200'}`} title="Align Right">
+          <button onClick={() => onChange({ textAlign: 'right' })} className={`flex-1 py-1.5 flex items-center justify-center border rounded transition-colors ${el.textAlign === 'right' ? 'bg-blue-600 border-blue-600 text-white shadow-sm' : 'bg-white hover:bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 dark:border-gray-700'}`} title="Align Right">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="21" y1="10" x2="7" y2="10" /><line x1="21" y1="6" x2="3" y2="6" /><line x1="21" y1="14" x2="7" y2="14" /><line x1="21" y1="18" x2="3" y2="18" /></svg>
           </button>
         </div>
       </div>
 
       <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">Font</label>
-        <select value={el.fontFamily || 'Inter'} onChange={e => onChange({ fontFamily: e.target.value })} className="w-full px-1 py-1 text-[11px] border rounded outline-none bg-white" style={{ fontFamily: el.fontFamily || 'Inter' }}>
+        <select value={el.fontFamily || 'Inter'} onChange={e => onChange({ fontFamily: e.target.value })} className="w-full px-1 py-1 text-[11px] border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded outline-none transition-colors" style={{ fontFamily: el.fontFamily || 'Inter' }}>
           <option value="Inter" style={{ fontFamily: 'Inter' }}>Inter</option>
           <option value="Georgia" style={{ fontFamily: 'Georgia' }}>Georgia</option>
           <option value="Courier New" style={{ fontFamily: 'Courier New' }}>Courier New</option>
@@ -75,18 +75,18 @@ const SidebarTextFields = ({ el, onChange }: { el: TextElement; onChange: (u: Pa
         </select>
       </div>
 
-      <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">Size (em)</label><input type="number" step="0.1" value={el.fontSize} onChange={e => onChange({ fontSize: Number(e.target.value) })} className="w-full px-1.5 py-1 text-xs border rounded outline-none" /></div>
+      <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">Size (em)</label><input type="number" step="0.1" value={el.fontSize} onChange={e => onChange({ fontSize: Number(e.target.value) })} className="w-full px-1.5 py-1 text-xs border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded outline-none transition-colors" /></div>
 
       <div className="grid grid-cols-2 gap-2">
         <div>
           <label className="block text-[10px] font-semibold text-gray-500 uppercase">Color</label>
-          <input type="color" value={el.color} onChange={e => onChange({ color: e.target.value })} className="w-full h-7 p-0.5 rounded cursor-pointer border shadow-sm" />
-          <input type="text" value={el.color} onChange={e => onChange({ color: e.target.value })} className="w-full mt-1 px-1 py-0.5 text-[9px] border rounded font-mono text-center focus:border-blue-400 outline-none" />
+          <input type="color" value={el.color} onChange={e => onChange({ color: e.target.value })} className="w-full h-7 p-0.5 rounded cursor-pointer border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm transition-colors" />
+          <input type="text" value={el.color} onChange={e => onChange({ color: e.target.value })} className="w-full mt-1 px-1 py-0.5 text-[9px] border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded font-mono text-center focus:border-blue-400 outline-none transition-colors" />
         </div>
         <div>
           <label className="block text-[10px] font-semibold text-gray-500 uppercase">Bg Color</label>
-          <input type="color" value={el.backgroundColor || '#ffffff'} onChange={e => onChange({ backgroundColor: e.target.value })} className="w-full h-7 p-0.5 rounded cursor-pointer border shadow-sm" />
-          <input type="text" value={el.backgroundColor || 'transparent'} onChange={e => onChange({ backgroundColor: e.target.value })} className="w-full mt-1 px-1 py-0.5 text-[9px] border rounded font-mono text-center focus:border-blue-400 outline-none" />
+          <input type="color" value={el.backgroundColor || '#ffffff'} onChange={e => onChange({ backgroundColor: e.target.value })} className="w-full h-7 p-0.5 rounded cursor-pointer border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm transition-colors" />
+          <input type="text" value={el.backgroundColor || 'transparent'} onChange={e => onChange({ backgroundColor: e.target.value })} className="w-full mt-1 px-1 py-0.5 text-[9px] border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded font-mono text-center focus:border-blue-400 outline-none transition-colors" />
         </div>
       </div>
     </div>
@@ -111,12 +111,12 @@ const SidebarImageFields = ({ el, onChange }: { el: ImageElement; onChange: (u: 
     <div className="flex flex-col gap-3 mt-4">
       <div>
         <label className="block text-[10px] font-semibold text-gray-500 uppercase">Image URL</label>
-        <input type="text" value={el.src} onChange={e => onChange({ src: e.target.value })} placeholder="https://example.com/image.png" className="w-full px-1.5 py-1 text-xs border rounded outline-none break-all" />
+        <input type="text" value={el.src} onChange={e => onChange({ src: e.target.value })} placeholder="https://example.com/image.png" className="w-full px-1.5 py-1 text-xs border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded outline-none break-all transition-colors" />
         <p className="text-[8px] text-gray-400 mt-0.5">Supports PNG, JPG, GIF, SVG, WebP</p>
       </div>
       <div>
         <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Upload</label>
-        <label className="flex items-center justify-center gap-1.5 w-full py-1.5 text-[10px] font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded cursor-pointer transition-colors">
+        <label className="flex items-center justify-center gap-1.5 w-full py-1.5 text-[10px] font-semibold text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded cursor-pointer transition-colors">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
           Choose File
           <input type="file" accept="image/*,.gif" onChange={handleFile} className="hidden" />
@@ -124,11 +124,11 @@ const SidebarImageFields = ({ el, onChange }: { el: ImageElement; onChange: (u: 
       </div>
       <div>
         <label className="block text-[10px] font-semibold text-gray-500 uppercase">Alt Text</label>
-        <input type="text" value={el.alt} onChange={e => onChange({ alt: e.target.value })} className="w-full px-1.5 py-1 text-xs border rounded outline-none" />
+        <input type="text" value={el.alt} onChange={e => onChange({ alt: e.target.value })} className="w-full px-1.5 py-1 text-xs border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded outline-none transition-colors" />
       </div>
       <div>
         <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Rotate</label>
-        <button onClick={handleRotate} className="w-full py-1.5 text-[10px] font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded flex items-center justify-center gap-1.5 transition-colors">
+        <button onClick={handleRotate} className="w-full py-1.5 text-[10px] font-bold text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded flex items-center justify-center gap-1.5 transition-colors">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
           90° ({el.rotation || 0}°)
         </button>
@@ -140,8 +140,8 @@ const SidebarImageFields = ({ el, onChange }: { el: ImageElement; onChange: (u: 
 /** Video element specific sidebar fields (YouTube focus) */
 const SidebarVideoFields = ({ el, onChange }: { el: VideoElement; onChange: (u: Partial<VideoElement>) => void }) => (
   <div className="flex flex-col gap-3 mt-4">
-    <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">YouTube URL</label><input type="text" value={el.src} onChange={e => onChange({ src: e.target.value })} className="w-full px-1.5 py-1 text-xs border rounded outline-none" /></div>
-    <label className="flex items-center gap-1.5 text-[11px]"><input type="checkbox" checked={el.autoplay} onChange={e => onChange({ autoplay: e.target.checked })} /> Auto-play</label>
+    <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">YouTube URL</label><input type="text" value={el.src} onChange={e => onChange({ src: e.target.value })} className="w-full px-1.5 py-1 text-xs border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded outline-none transition-colors" /></div>
+    <label className="flex items-center gap-1.5 text-[11px] text-gray-700 dark:text-gray-300"><input type="checkbox" checked={el.autoplay} onChange={e => onChange({ autoplay: e.target.checked })} /> Auto-play</label>
   </div>
 );
 
@@ -151,7 +151,7 @@ const SidebarCodeFields = ({ el, onChange }: { el: CodeElement; onChange: (u: Pa
     <div className="flex flex-col gap-3 mt-4">
       <div className="flex flex-col gap-3">
         <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">Language</label>
-          <select value={el.language} onChange={e => onChange({ language: e.target.value as CodeLanguage })} className="w-full px-1 py-1 text-[11px] border rounded outline-none bg-white">
+          <select value={el.language} onChange={e => onChange({ language: e.target.value as CodeLanguage })} className="w-full px-1 py-1 text-[11px] border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded outline-none transition-colors">
             <option value="javascript">JavaScript</option>
             <option value="python">Python</option>
             <option value="c">C</option>
@@ -159,7 +159,7 @@ const SidebarCodeFields = ({ el, onChange }: { el: CodeElement; onChange: (u: Pa
           </select>
         </div>
         <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">Theme</label>
-          <select value={el.theme || 'vs-dark'} onChange={e => onChange({ theme: e.target.value as CodeTheme })} className="w-full px-1 py-1 text-[11px] border rounded outline-none bg-white">
+          <select value={el.theme || 'vs-dark'} onChange={e => onChange({ theme: e.target.value as CodeTheme })} className="w-full px-1 py-1 text-[11px] border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded outline-none transition-colors">
             <option value="vs-dark">VS Dark</option>
             <option value="monokai">Monokai</option>
             <option value="ally-dark">Ally Dark</option>
@@ -167,12 +167,12 @@ const SidebarCodeFields = ({ el, onChange }: { el: CodeElement; onChange: (u: Pa
             <option value="solarized">Solarized</option>
           </select>
         </div>
-        <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">Size</label><input type="number" step="0.1" value={el.fontSize} onChange={e => onChange({ fontSize: Number(e.target.value) })} className="w-full px-1.5 py-1 text-[11px] border rounded" /></div>
+        <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">Size</label><input type="number" step="0.1" value={el.fontSize} onChange={e => onChange({ fontSize: Number(e.target.value) })} className="w-full px-1.5 py-1 text-[11px] border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded transition-colors" /></div>
         <div>
           <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Line Numbers</label>
           <button
             onClick={() => onChange({ showLineNumbers: !el.showLineNumbers })}
-            className={`w-full py-1 text-[10px] font-bold border rounded flex items-center justify-center gap-1.5 transition-colors ${el.showLineNumbers ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white hover:bg-gray-100 text-gray-600 border-gray-200'}`}
+            className={`w-full py-1 text-[10px] font-bold border rounded flex items-center justify-center gap-1.5 transition-colors ${el.showLineNumbers ? 'bg-blue-600 border-blue-600 text-white dark:bg-blue-600 dark:border-blue-600' : 'bg-white hover:bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 dark:border-gray-700'}`}
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="9" x2="20" y2="9" /><line x1="4" y1="15" x2="20" y2="15" /><line x1="10" y1="3" x2="8" y2="21" /><line x1="16" y1="3" x2="14" y2="21" /></svg>
             {el.showLineNumbers ? 'ON' : 'OFF'}
@@ -182,14 +182,14 @@ const SidebarCodeFields = ({ el, onChange }: { el: CodeElement; onChange: (u: Pa
           <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Frame</label>
           <button
             onClick={() => onChange({ showFrame: !el.showFrame })}
-            className={`w-full py-1 text-[10px] font-bold border rounded flex items-center justify-center gap-1.5 transition-colors ${el.showFrame ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white hover:bg-gray-100 text-gray-600 border-gray-200'}`}
+            className={`w-full py-1 text-[10px] font-bold border rounded flex items-center justify-center gap-1.5 transition-colors ${el.showFrame ? 'bg-blue-600 border-blue-600 text-white dark:bg-blue-600 dark:border-blue-600' : 'bg-white hover:bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 dark:border-gray-700'}`}
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>
             {el.showFrame ? 'ON' : 'OFF'}
           </button>
         </div>
       </div>
-      <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">Code</label><textarea value={el.code} onChange={e => onChange({ code: e.target.value })} spellCheck={false} className="w-full min-h-[80px] p-1.5 text-[11px] border rounded outline-none font-mono whitespace-pre resize-y" /></div>
+      <div><label className="block text-[10px] font-semibold text-gray-500 uppercase">Code</label><textarea value={el.code} onChange={e => onChange({ code: e.target.value })} spellCheck={false} className="w-full min-h-[80px] p-1.5 text-[11px] border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded outline-none font-mono whitespace-pre resize-y transition-colors" /></div>
     </div>
   );
 };
@@ -453,35 +453,35 @@ export const EditPresentation: React.FC = () => {
     <div className="flex flex-col h-screen w-full bg-gray-50 overflow-hidden">
 
       {/* ── TOP HEADER BAR ───────────────────────── */}
-      <header className="flex flex-wrap xl:flex-nowrap items-center justify-between gap-4 px-4 sm:px-6 py-3 sm:py-4 bg-white border-b border-gray-200 shrink-0">
+      <header className="flex flex-wrap xl:flex-nowrap items-center justify-between gap-4 px-4 sm:px-6 py-3 sm:py-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shrink-0 transition-colors">
         <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           <Button variant="secondary" onClick={() => navigate('/dashboard')}>
             Back
           </Button>
           <div className="flex gap-2">
-            <button onClick={() => setIsToolsOpen(!isToolsOpen)} className={`p-1.5 rounded transition-colors ${isToolsOpen ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`} title="Toggle Tool Panel">
+            <button onClick={() => setIsToolsOpen(!isToolsOpen)} className={`p-1.5 rounded transition-colors ${isToolsOpen ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-gray-100 text-gray-500 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600'}`} title="Toggle Tool Panel">
               <IconPanel />
             </button>
-            <button onClick={() => setIsEditOpen(!isEditOpen)} className={`p-1.5 rounded transition-colors ${isEditOpen ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`} title="Toggle Edit Panel">
+            <button onClick={() => setIsEditOpen(!isEditOpen)} className={`p-1.5 rounded transition-colors ${isEditOpen ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-gray-100 text-gray-500 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600'}`} title="Toggle Edit Panel">
               <IconSliders />
             </button>
           </div>
-          <div className="hidden sm:block h-6 w-px bg-gray-300" />
+          <div className="hidden sm:block h-6 w-px bg-gray-300 dark:bg-gray-600" />
           <div className="flex items-center gap-2">
-            <h1 className="text-lg sm:text-xl font-bold text-gray-900 leading-tight truncate max-w-[150px] sm:max-w-md">
+            <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 leading-tight truncate max-w-[150px] sm:max-w-md">
               {presentation.name}
             </h1>
             <div className="flex items-center gap-1">
               <button
                 onClick={handleOpenDetailsModal}
-                className="p-1.5 text-gray-400 hover:text-blue-500 hover:bg-gray-100 rounded transition-colors"
+                className="p-1.5 text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
                 title="Edit Title"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>
               </button>
               <button
                 onClick={handleOpenDetailsModal}
-                className="p-1.5 text-gray-400 hover:text-blue-500 hover:bg-gray-100 rounded transition-colors"
+                className="p-1.5 text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
                 title="Edit Thumbnail"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>
@@ -496,7 +496,7 @@ export const EditPresentation: React.FC = () => {
           <Button variant="danger" onClick={handleDeleteSlide}>
             Delete Slide
           </Button>
-          <div className="hidden sm:block h-6 w-px bg-gray-300" />
+          <div className="hidden sm:block h-6 w-px bg-gray-300 dark:bg-gray-600" />
           <Button variant="secondary" onClick={() => setIsSlidePanelOpen(true)}>
             Slide panel
           </Button>
@@ -518,61 +518,61 @@ export const EditPresentation: React.FC = () => {
 
         {/* 1. Left Add Element Toolset */}
         {isToolsOpen && (
-          <div className="w-14 bg-white border-r border-gray-200 flex flex-col items-center py-4 z-30 shrink-0 gap-3 transition-all duration-300">
-            <button title="Add Text" onClick={() => { setActiveModalType('text'); setEditingElement(null); }} className="w-10 h-10 flex items-center justify-center rounded text-blue-600 hover:bg-blue-50 transition-colors"><IconText /></button>
-            <button title="Add Image" onClick={() => { setActiveModalType('image'); setEditingElement(null); }} className="w-10 h-10 flex items-center justify-center rounded text-green-600 hover:bg-green-50 transition-colors"><IconImage /></button>
-            <button title="Add Video" onClick={() => { setActiveModalType('video'); setEditingElement(null); }} className="w-10 h-10 flex items-center justify-center rounded text-purple-600 hover:bg-purple-50 transition-colors"><IconVideo /></button>
-            <button title="Add Code" onClick={() => { setActiveModalType('code'); setEditingElement(null); }} className="w-10 h-10 flex items-center justify-center rounded text-orange-600 hover:bg-orange-50 transition-colors"><IconCode /></button>
+          <div className="w-14 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col items-center py-4 z-30 shrink-0 gap-3 transition-all duration-300">
+            <button title="Add Text" onClick={() => { setActiveModalType('text'); setEditingElement(null); }} className="w-10 h-10 flex items-center justify-center rounded text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"><IconText /></button>
+            <button title="Add Image" onClick={() => { setActiveModalType('image'); setEditingElement(null); }} className="w-10 h-10 flex items-center justify-center rounded text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors"><IconImage /></button>
+            <button title="Add Video" onClick={() => { setActiveModalType('video'); setEditingElement(null); }} className="w-10 h-10 flex items-center justify-center rounded text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors"><IconVideo /></button>
+            <button title="Add Code" onClick={() => { setActiveModalType('code'); setEditingElement(null); }} className="w-10 h-10 flex items-center justify-center rounded text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/30 transition-colors"><IconCode /></button>
           </div>
         )}
 
         {/* 2. Secondary Element Properties Sidebar */}
         {isEditOpen && (
-          <div className="w-[180px] bg-[#fafafa] border-r border-gray-200 flex flex-col z-20 shrink-0 shadow-[2px_0_10px_rgba(0,0,0,0.02)] overflow-y-auto transition-all duration-300">
+          <div className="w-[180px] bg-[#fafafa] dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col z-20 shrink-0 shadow-[2px_0_10px_rgba(0,0,0,0.02)] overflow-y-auto transition-all duration-300">
             {selectedEl ? (
               <div className="flex flex-col h-full">
-                <div className="flex items-center justify-between px-3 py-2.5 bg-white border-b border-gray-200 sticky top-0 z-10">
-                  <span className="text-[11px] font-bold text-gray-800 uppercase tracking-wider flex items-center gap-1.5">
+                <div className="flex items-center justify-between px-3 py-2.5 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10 transition-colors">
+                  <span className="text-[11px] font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wider flex items-center gap-1.5">
                     <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
                     {selectedEl.type}
                   </span>
-                  <button onClick={() => setSelectedElementId(null)} className="text-gray-400 hover:text-black">✖</button>
+                  <button onClick={() => setSelectedElementId(null)} className="text-gray-400 hover:text-black dark:hover:text-white">✖</button>
                 </div>
 
-                <div className="p-3 flex-1 overflow-y-auto">
+                <div className="p-3 flex-1 overflow-y-auto text-gray-800 dark:text-gray-200">
                   <SidebarDimensions el={selectedEl} onChange={handleInlineUpdate} />
-                  <div className="w-full h-px bg-gray-200 my-4" />
+                  <div className="w-full h-px bg-gray-200 dark:bg-gray-700 my-4" />
                   {selectedEl.type === 'text' && <SidebarTextFields el={selectedEl} onChange={handleInlineUpdate} />}
                   {selectedEl.type === 'image' && <SidebarImageFields el={selectedEl} onChange={handleInlineUpdate} />}
                   {selectedEl.type === 'video' && <SidebarVideoFields el={selectedEl} onChange={handleInlineUpdate} />}
                   {selectedEl.type === 'code' && <SidebarCodeFields el={selectedEl} onChange={handleInlineUpdate} />}
                 </div>
 
-                <div className="p-3 bg-white border-t border-gray-200 mt-auto flex flex-col gap-2">
-                  <button onClick={handleDuplicate} className="w-full py-1 text-[9px] font-bold text-white bg-black hover:bg-gray-800 rounded shadow-sm">
+                <div className="p-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-auto flex flex-col gap-2 transition-colors">
+                  <button onClick={handleDuplicate} className="w-full py-1 text-[9px] font-bold text-white bg-black dark:bg-gray-700 hover:bg-gray-800 dark:hover:bg-gray-600 rounded shadow-sm transition-colors">
                     Duplicate
                   </button>
-                  <button onClick={() => { deleteElement(presentation.id, activeSlideData.id, selectedEl.id); setSelectedElementId(null); }} className="w-full py-1 text-[9px] font-bold text-white bg-red-600 hover:bg-red-700 rounded shadow-sm">
+                  <button onClick={() => { deleteElement(presentation.id, activeSlideData.id, selectedEl.id); setSelectedElementId(null); }} className="w-full py-1 text-[9px] font-bold text-white bg-red-600 hover:bg-red-700 rounded shadow-sm transition-colors">
                     Delete
                   </button>
                 </div>
               </div>
             ) : (
               // Case when no element is selected on the current slide
-              <div className="flex-1 flex flex-col items-center justify-center px-4 text-center text-gray-400 bg-[#fafafa]">
-                <div className="w-12 h-12 mb-3 rounded-full bg-gray-100 flex items-center justify-center">
+              <div className="flex-1 flex flex-col items-center justify-center px-4 text-center text-gray-400 bg-[#fafafa] dark:bg-gray-900 transition-colors">
+                <div className="w-12 h-12 mb-3 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center transition-colors">
                   <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
                   </svg>
                 </div>
-                <p className="text-[11px] text-gray-500 leading-relaxed font-medium">Select any element on the canvas to visually edit its properties here.</p>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed font-medium">Select any element on the canvas to visually edit its properties here.</p>
               </div>
             )}
           </div>
         )}
 
         {/* 3. Main Slide Canvas Area */}
-        <div className="flex-1 bg-gray-100 relative flex flex-col overflow-hidden">
+        <div className="flex-1 bg-gray-100 dark:bg-gray-950 relative flex flex-col overflow-hidden transition-colors">
           {/* Actual Slide Content Viewer */}
           <div className="flex-1 w-full flex items-center justify-center overflow-hidden p-4 sm:p-8 min-h-0">
             <div className="relative flex items-center justify-center max-w-full max-h-full group/slidebox shadow-2xl">
@@ -640,7 +640,7 @@ export const EditPresentation: React.FC = () => {
             <Input label="Title" value={editName} onChange={(e) => setEditName(e.target.value)} required />
             <Input label="Description" value={editDescription} onChange={(e) => setEditDescription(e.target.value)} />
             <div className="flex flex-col gap-2">
-              <span className="text-sm font-medium text-gray-700">Thumbnail</span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Thumbnail</span>
               <div className="grid grid-cols-3 gap-2">
                 {([
                   ['auto', 'First slide'],
@@ -656,8 +656,8 @@ export const EditPresentation: React.FC = () => {
                     }}
                     className={`rounded border px-2 py-2 text-xs font-semibold transition-colors ${
                       editThumbnailMode === mode
-                        ? 'border-blue-600 bg-blue-50 text-blue-700'
-                        : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                        ? 'border-blue-600 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                        : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
                     }`}
                   >
                     {label}
@@ -666,7 +666,7 @@ export const EditPresentation: React.FC = () => {
               </div>
 
               {editThumbnailMode === 'auto' && (
-                <p className="rounded bg-gray-50 px-3 py-2 text-xs text-gray-600">
+                <p className="rounded bg-gray-50 dark:bg-gray-800 px-3 py-2 text-xs text-gray-600 dark:text-gray-300 transition-colors">
                   The dashboard card will use a live mini-preview of the first slide.
                 </p>
               )}
@@ -682,18 +682,18 @@ export const EditPresentation: React.FC = () => {
 
               {editThumbnailMode === 'upload' && (
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-semibold text-gray-600">Thumbnail image file</label>
+                  <label className="text-xs font-semibold text-gray-600 dark:text-gray-300">Thumbnail image file</label>
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handleEditThumbnailUpload}
-                    className="text-sm text-gray-500 file:mr-4 file:rounded file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
+                    className="text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:rounded file:border-0 file:bg-blue-50 dark:file:bg-blue-900/30 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 dark:file:text-blue-400 hover:file:bg-blue-100 dark:hover:file:bg-blue-900/50 transition-colors"
                   />
                   {editThumbnail && (
                     <img
                       src={editThumbnail}
                       alt="Uploaded thumbnail preview"
-                      className="h-24 w-full rounded border border-gray-200 object-cover"
+                      className="h-24 w-full rounded border border-gray-200 dark:border-gray-700 object-cover"
                     />
                   )}
                 </div>
@@ -710,7 +710,7 @@ export const EditPresentation: React.FC = () => {
       {/* Delete Confirmation Modal */}
       {isDeleteOpen && (
         <Modal title="Are you sure?" onClose={() => setIsDeleteOpen(false)}>
-          <p className="text-sm text-gray-600 mb-6">Do you really want to delete this presentation? This action cannot be undone.</p>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-6 transition-colors">Do you really want to delete this presentation? This action cannot be undone.</p>
           <div className="flex gap-3 justify-end">
             <Button type="button" variant="secondary" onClick={() => setIsDeleteOpen(false)}>No</Button>
             <Button type="button" variant="danger" onClick={handleDeleteConfirmed}>Yes</Button>
@@ -763,8 +763,8 @@ export const EditPresentation: React.FC = () => {
                     }}
                     className={`cursor-grab rounded border p-2 text-left transition-colors active:cursor-grabbing ${
                       currentSlide === index
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                        : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700'
                     }`}
                   >
                     <SlideThumbnail
@@ -773,8 +773,8 @@ export const EditPresentation: React.FC = () => {
                       defaultBackground={presentation.defaultBackground}
                     />
                     <div className="mt-2 flex items-center justify-between text-xs">
-                      <span className="font-semibold text-gray-800">Slide {index + 1}</span>
-                      <span className="text-gray-500">{slide.elements.length} element{slide.elements.length === 1 ? '' : 's'}</span>
+                      <span className="font-semibold text-gray-800 dark:text-gray-200">Slide {index + 1}</span>
+                      <span className="text-gray-500 dark:text-gray-400">{slide.elements.length} element{slide.elements.length === 1 ? '' : 's'}</span>
                     </div>
                   </button>
                 </div>
@@ -798,7 +798,7 @@ export const EditPresentation: React.FC = () => {
               </div>
             </div>
           </div>
-          <p className="mt-3 text-xs text-gray-500">
+          <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
             Drag a slide preview and drop it between previews to rearrange the deck.
           </p>
         </Modal>
@@ -809,16 +809,16 @@ export const EditPresentation: React.FC = () => {
         <Modal title="Version History" onClose={() => setIsHistoryOpen(false)} maxWidthClassName="max-w-2xl">
           <div className="flex max-h-[70vh] flex-col gap-3 overflow-y-auto">
             {(presentation.history || []).length === 0 ? (
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 No revision snapshots yet. Presto records deck snapshots during edits, with at least one minute between saved history moments.
               </p>
             ) : (
               (presentation.history || []).map((entry) => (
-                <div key={entry.id} className="rounded border border-gray-200 bg-gray-50 p-3">
+                <div key={entry.id} className="rounded border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-3 transition-colors">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <div className="text-sm font-semibold text-gray-900">{formatHistoryTime(entry.savedAt)}</div>
-                      <div className="mt-1 text-xs text-gray-500">
+                      <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">{formatHistoryTime(entry.savedAt)}</div>
+                      <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                         {entry.slides.length} slide{entry.slides.length === 1 ? '' : 's'} saved
                       </div>
                     </div>
@@ -852,22 +852,22 @@ export const EditPresentation: React.FC = () => {
           const kind: BackgroundKind = bg?.kind || 'solid';
           const value = bg?.value || '#ffffff';
           return (
-            <div className="flex flex-col gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="flex flex-col gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">{label}</span>
-                {onReset && <button type="button" onClick={onReset} className="text-[10px] text-blue-600 hover:text-blue-800 font-semibold">Reset to Default</button>}
+                <span className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">{label}</span>
+                {onReset && <button type="button" onClick={onReset} className="text-[10px] text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-semibold">Reset to Default</button>}
               </div>
               <div className="flex gap-1">
                 {(['solid', 'gradient', 'image'] as const).map(k => (
-                  <button key={k} type="button" onClick={() => onChange({ kind: k, value: k === 'solid' ? '#ffffff' : k === 'gradient' ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : '' })} className={`flex-1 py-1.5 text-[10px] font-bold border rounded transition-colors ${kind === k ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white hover:bg-gray-100 text-gray-600 border-gray-200'}`}>
+                  <button key={k} type="button" onClick={() => onChange({ kind: k, value: k === 'solid' ? '#ffffff' : k === 'gradient' ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : '' })} className={`flex-1 py-1.5 text-[10px] font-bold border rounded transition-colors ${kind === k ? 'bg-blue-600 border-blue-600 text-white dark:bg-blue-600 dark:border-blue-600' : 'bg-white hover:bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-900 dark:hover:bg-gray-700 dark:text-gray-300 dark:border-gray-700'}`}>
                     {k.toUpperCase()}
                   </button>
                 ))}
               </div>
               {kind === 'solid' && (
                 <div className="flex gap-2 items-center">
-                  <input type="color" value={value} onChange={e => onChange({ kind: 'solid', value: e.target.value })} className="w-10 h-8 p-0.5 rounded cursor-pointer border" />
-                  <input type="text" value={value} onChange={e => onChange({ kind: 'solid', value: e.target.value })} className="flex-1 px-2 py-1 text-xs border rounded font-mono" />
+                  <input type="color" value={value} onChange={e => onChange({ kind: 'solid', value: e.target.value })} className="w-10 h-8 p-0.5 rounded cursor-pointer border dark:border-gray-700 bg-white dark:bg-gray-900 transition-colors" />
+                  <input type="text" value={value} onChange={e => onChange({ kind: 'solid', value: e.target.value })} className="flex-1 px-2 py-1 text-xs border dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded font-mono transition-colors" />
                 </div>
               )}
               {kind === 'gradient' && (
@@ -883,16 +883,16 @@ export const EditPresentation: React.FC = () => {
                       'linear-gradient(180deg, #0c0c0c 0%, #1a1a2e 100%)',
                       'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
                     ].map((g, i) => (
-                      <button key={i} type="button" onClick={() => onChange({ kind: 'gradient', value: g })} className={`h-8 rounded border-2 transition-all ${value === g ? 'border-blue-500 ring-1 ring-blue-300' : 'border-transparent hover:border-gray-300'}`} style={{ background: g }} />
+                      <button key={i} type="button" onClick={() => onChange({ kind: 'gradient', value: g })} className={`h-8 rounded border-2 transition-all ${value === g ? 'border-blue-500 ring-1 ring-blue-300' : 'border-transparent hover:border-gray-300 dark:hover:border-gray-600'}`} style={{ background: g }} />
                     ))}
                   </div>
-                  <input type="text" value={value} onChange={e => onChange({ kind: 'gradient', value: e.target.value })} placeholder="linear-gradient(...)" className="w-full px-2 py-1 text-[10px] border rounded font-mono" />
+                  <input type="text" value={value} onChange={e => onChange({ kind: 'gradient', value: e.target.value })} placeholder="linear-gradient(...)" className="w-full px-2 py-1 text-[10px] border dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded font-mono transition-colors" />
                 </div>
               )}
               {kind === 'image' && (
                 <div className="flex flex-col gap-2">
-                  <input type="text" value={value} onChange={e => onChange({ kind: 'image', value: e.target.value })} placeholder="https://example.com/bg.jpg" className="w-full px-2 py-1.5 text-xs border rounded" />
-                  <label className="flex items-center justify-center gap-1.5 w-full py-2 text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded cursor-pointer transition-colors">
+                  <input type="text" value={value} onChange={e => onChange({ kind: 'image', value: e.target.value })} placeholder="https://example.com/bg.jpg" className="w-full px-2 py-1.5 text-xs border dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded transition-colors" />
+                  <label className="flex items-center justify-center gap-1.5 w-full py-2 text-xs font-semibold text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded cursor-pointer transition-colors">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
                     Upload Background Image
                     <input type="file" accept="image/*,.gif" className="hidden" onChange={e => {
@@ -907,7 +907,7 @@ export const EditPresentation: React.FC = () => {
                 </div>
               )}
               {/* Layout Preview for the Background Modal */}
-              <div className="w-full aspect-[16/9] rounded border border-gray-200 shadow-inner" style={
+              <div className="w-full aspect-[16/9] rounded border border-gray-200 dark:border-gray-700 shadow-inner" style={
                 kind === 'solid' ? { backgroundColor: value } :
                 kind === 'gradient' ? { background: value } :
                 { backgroundImage: `url(${value})`, backgroundSize: 'cover', backgroundPosition: 'center' }

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:is(.dark *));
 
 :root {
   line-height: 1.5;
@@ -14,6 +15,12 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background: #eef2f6;
+  color: #111827;
+}
+
+html.dark body {
+  background: #111827;
+  color: #f9fafb;
 }
 
 #root {
