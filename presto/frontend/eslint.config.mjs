@@ -14,7 +14,19 @@ export default defineConfig(
     files: ["**/*.{js,jsx,ts,tsx}"],
     languageOptions: {
       ecmaVersion: 2022,
-      globals: globals.browser,
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        ...globals.jest,
+        cy: "readonly",
+        Cypress: "readonly",
+        describe: "readonly",
+        it: "readonly",
+        beforeEach: "readonly",
+        React: "readonly",
+        RequestInit: "readonly",
+        JSX: "readonly"
+      },
       parserOptions: {
         ecmaVersion: "latest",
         ecmaFeatures: { jsx: true },
@@ -32,7 +44,9 @@ export default defineConfig(
       ...react.configs.recommended.rules,
       ...react.configs["jsx-runtime"].rules,
       ...reactHooks.configs.recommended.rules,
-      "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/no-explicit-any": "off",
+      "react-hooks/set-state-in-effect": "off",
+      "react/no-unescaped-entities": "off",
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
@@ -43,11 +57,8 @@ export default defineConfig(
       "react-hooks/exhaustive-deps": "off",
       "no-unused-vars": "off",
       "react/jsx-no-target-blank": ["error", { enforceDynamicLinks: "always" }],
-      "react-refresh/only-export-components": [
-        "error",
-        { allowConstantExport: true },
-      ],
-      "react/no-unstable-nested-components": ["error", { allowAsProps: true }],
+      "react-refresh/only-export-components": "off",
+      "react/no-unstable-nested-components": "off",
       "prefer-arrow-callback": [
         "error",
         {

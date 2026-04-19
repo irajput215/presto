@@ -168,107 +168,107 @@ export const ElementBlock: React.FC<ElementBlockProps> = ({
 
   const renderContent = () => {
     switch (element.type) {
-      case 'text':
-        return (
-          <div
-            style={{ 
-              fontSize: `${element.fontSize}em`, 
-              color: element.color,
-              backgroundColor: element.backgroundColor || 'transparent',
-              textAlign: element.textAlign || 'left',
-              fontFamily: element.fontFamily || 'Inter',
-              width: '100%',
-              height: '100%'
+    case 'text':
+      return (
+        <div
+          style={{ 
+            fontSize: `${element.fontSize}em`, 
+            color: element.color,
+            backgroundColor: element.backgroundColor || 'transparent',
+            textAlign: element.textAlign || 'left',
+            fontFamily: element.fontFamily || 'Inter',
+            width: '100%',
+            height: '100%'
+          }}
+          className="overflow-y-auto whitespace-pre-wrap break-words p-2"
+        >
+          {element.text}
+        </div>
+      );
+    case 'image':
+      return (
+        <div className="w-full h-full overflow-hidden relative">
+          <img
+            src={element.src}
+            alt={element.alt}
+            className="w-full h-full object-cover select-none pointer-events-none"
+            style={{ transform: `rotate(${element.rotation || 0}deg)` }}
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+              const span = e.currentTarget.nextElementSibling as HTMLElement;
+              if (span) span.style.display = 'block';
             }}
-            className="overflow-y-auto whitespace-pre-wrap break-words p-2"
-          >
-            {element.text}
-          </div>
-        );
-      case 'image':
-        return (
-          <div className="w-full h-full overflow-hidden relative">
-            <img
-              src={element.src}
-              alt={element.alt}
-              className="w-full h-full object-cover select-none pointer-events-none"
-              style={{ transform: `rotate(${element.rotation || 0}deg)` }}
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                const span = e.currentTarget.nextElementSibling as HTMLElement;
-                if (span) span.style.display = 'block';
-              }}
-            />
-            <span className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs text-center px-2 hidden">
-              {element.alt || 'Broken Image'}
-            </span>
-          </div>
-        );
-      case 'video': {
-        const appendQuery = element.src.includes('?') ? '&autoplay=1' : '?autoplay=1';
-        return (
-          <div className="w-full h-full overflow-hidden bg-gray-100 p-3 border border-gray-200">
-            <iframe
-              src={`${element.src}${element.autoplay ? appendQuery : ''}`}
-              title="video"
-              allowFullScreen
-              className="w-full h-full border-0 pointer-events-auto bg-black"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            />
-          </div>
-        );
-      }
-      case 'code': {
-        const themes: Record<string, { bg: string; plain: string; keyword: string; string: string; comment: string; number: string }> = {
-          'vs-dark':     { bg: '#1e1e1e', plain: '#d4d4d4', keyword: '#569cd6', string: '#ce9178', comment: '#6a9955', number: '#b5cea8' },
-          'monokai':     { bg: '#272822', plain: '#f8f8f2', keyword: '#f92672', string: '#e6db74', comment: '#75715e', number: '#ae81ff' },
-          'ally-dark':   { bg: '#1a1a2e', plain: '#e0e0e0', keyword: '#00d2ff', string: '#ffcb6b', comment: '#546e7a', number: '#f78c6c' },
-          'ally-light':  { bg: '#fafafa', plain: '#383a42', keyword: '#a626a4', string: '#50a14f', comment: '#a0a1a7', number: '#986801' },
-          'solarized':   { bg: '#002b36', plain: '#839496', keyword: '#268bd2', string: '#2aa198', comment: '#586e75', number: '#d33682' },
-        };
-        const t = themes[element.theme || 'vs-dark'] || themes['vs-dark'];
-        const langLabel: Record<string, string> = { javascript: 'JavaScript', python: 'Python', c: 'C', latex: 'LaTeX' };
-        return (
-          <div className="w-full h-full flex flex-col overflow-hidden pointer-events-none select-none font-mono" style={{ backgroundColor: t.bg }}>
-            {/* Standard window frame with status lights and language tag */}
-            {element.showFrame !== false && (
-              <div className="flex items-center gap-1.5 px-3 py-1.5 shrink-0" style={{ backgroundColor: t.bg, borderBottom: `1px solid ${t.comment}33` }}>
-                <span className="w-[10px] h-[10px] rounded-full bg-[#ff5f57]" />
-                <span className="w-[10px] h-[10px] rounded-full bg-[#febc2e]" />
-                <span className="w-[10px] h-[10px] rounded-full bg-[#28c840]" />
-                <span className="ml-auto text-[9px] font-semibold tracking-wider uppercase" style={{ color: t.comment }}>{langLabel[element.language] || element.language}</span>
-              </div>
-            )}
-            {/* Syntax-highlighted code body */}
-            <div
-              style={{ fontSize: `${element.fontSize}em` }}
-              className="flex-1 overflow-auto p-2"
-            >
-              <pre className="m-0 whitespace-pre leading-normal" style={{ color: t.plain }}>
-                {highlightCode(element.code, element.language).map((line, i) => (
-                  <div key={i} className="flex">
-                    {element.showLineNumbers && (
-                      <span className="inline-block w-8 text-right pr-3 select-none shrink-0" style={{ color: t.comment, opacity: 0.6 }}>{i + 1}</span>
-                    )}
-                    <span>
-                      {line.map((segment, j) => {
-                        let color = t.plain;
-                        if (segment.kind === 'keyword') color = t.keyword;
-                        if (segment.kind === 'string') color = t.string;
-                        if (segment.kind === 'comment') color = t.comment;
-                        if (segment.kind === 'number') color = t.number;
-                        return <span key={j} style={{ color }}>{segment.value}</span>;
-                      })}
-                    </span>
-                  </div>
-                ))}
-              </pre>
+          />
+          <span className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs text-center px-2 hidden">
+            {element.alt || 'Broken Image'}
+          </span>
+        </div>
+      );
+    case 'video': {
+      const appendQuery = element.src.includes('?') ? '&autoplay=1' : '?autoplay=1';
+      return (
+        <div className="w-full h-full overflow-hidden bg-gray-100 p-3 border border-gray-200">
+          <iframe
+            src={`${element.src}${element.autoplay ? appendQuery : ''}`}
+            title="video"
+            allowFullScreen
+            className="w-full h-full border-0 pointer-events-auto bg-black"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          />
+        </div>
+      );
+    }
+    case 'code': {
+      const themes: Record<string, { bg: string; plain: string; keyword: string; string: string; comment: string; number: string }> = {
+        'vs-dark':     { bg: '#1e1e1e', plain: '#d4d4d4', keyword: '#569cd6', string: '#ce9178', comment: '#6a9955', number: '#b5cea8' },
+        'monokai':     { bg: '#272822', plain: '#f8f8f2', keyword: '#f92672', string: '#e6db74', comment: '#75715e', number: '#ae81ff' },
+        'ally-dark':   { bg: '#1a1a2e', plain: '#e0e0e0', keyword: '#00d2ff', string: '#ffcb6b', comment: '#546e7a', number: '#f78c6c' },
+        'ally-light':  { bg: '#fafafa', plain: '#383a42', keyword: '#a626a4', string: '#50a14f', comment: '#a0a1a7', number: '#986801' },
+        'solarized':   { bg: '#002b36', plain: '#839496', keyword: '#268bd2', string: '#2aa198', comment: '#586e75', number: '#d33682' },
+      };
+      const t = themes[element.theme || 'vs-dark'] || themes['vs-dark'];
+      const langLabel: Record<string, string> = { javascript: 'JavaScript', python: 'Python', c: 'C', latex: 'LaTeX' };
+      return (
+        <div className="w-full h-full flex flex-col overflow-hidden pointer-events-none select-none font-mono" style={{ backgroundColor: t.bg }}>
+          {/* Standard window frame with status lights and language tag */}
+          {element.showFrame !== false && (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 shrink-0" style={{ backgroundColor: t.bg, borderBottom: `1px solid ${t.comment}33` }}>
+              <span className="w-[10px] h-[10px] rounded-full bg-[#ff5f57]" />
+              <span className="w-[10px] h-[10px] rounded-full bg-[#febc2e]" />
+              <span className="w-[10px] h-[10px] rounded-full bg-[#28c840]" />
+              <span className="ml-auto text-[9px] font-semibold tracking-wider uppercase" style={{ color: t.comment }}>{langLabel[element.language] || element.language}</span>
             </div>
+          )}
+          {/* Syntax-highlighted code body */}
+          <div
+            style={{ fontSize: `${element.fontSize}em` }}
+            className="flex-1 overflow-auto p-2"
+          >
+            <pre className="m-0 whitespace-pre leading-normal" style={{ color: t.plain }}>
+              {highlightCode(element.code, element.language).map((line, i) => (
+                <div key={i} className="flex">
+                  {element.showLineNumbers && (
+                    <span className="inline-block w-8 text-right pr-3 select-none shrink-0" style={{ color: t.comment, opacity: 0.6 }}>{i + 1}</span>
+                  )}
+                  <span>
+                    {line.map((segment, j) => {
+                      let color = t.plain;
+                      if (segment.kind === 'keyword') color = t.keyword;
+                      if (segment.kind === 'string') color = t.string;
+                      if (segment.kind === 'comment') color = t.comment;
+                      if (segment.kind === 'number') color = t.number;
+                      return <span key={j} style={{ color }}>{segment.value}</span>;
+                    })}
+                  </span>
+                </div>
+              ))}
+            </pre>
           </div>
-        );
-      }
-      default:
-        return null;
+        </div>
+      );
+    }
+    default:
+      return null;
     }
   };
 

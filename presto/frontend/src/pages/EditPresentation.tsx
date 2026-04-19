@@ -928,8 +928,8 @@ export const EditPresentation: React.FC = () => {
               {/* Layout Preview for the Background Modal */}
               <div className="w-full aspect-[16/9] rounded border border-gray-200 dark:border-gray-700 shadow-inner" style={
                 kind === 'solid' ? { backgroundColor: value } :
-                kind === 'gradient' ? { background: value } :
-                { backgroundImage: `url(${value})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                  kind === 'gradient' ? { background: value } :
+                    { backgroundImage: `url(${value})`, backgroundSize: 'cover', backgroundPosition: 'center' }
               } />
             </div>
           );
