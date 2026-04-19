@@ -924,6 +924,7 @@ export const EditPresentation: React.FC = () => {
                   </label>
                 </div>
               )}
+
               {/* Layout Preview for the Background Modal */}
               <div className="w-full aspect-[16/9] rounded border border-gray-200 dark:border-gray-700 shadow-inner" style={
                 kind === 'solid' ? { backgroundColor: value } :

@@ -1,8 +1,5 @@
-// React utilities
 import React, { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-
-// Shared utilities and contexts
 import { apiCall } from '../api/api';
 import { useAuth } from './AuthContext';
 import { useError } from './ErrorContext';
@@ -68,7 +65,7 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   // Global State
   const [presentations, setPresentations] = useState<Presentation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   // Context bridges
   const { token } = useAuth();
   const { showError } = useError();
@@ -87,7 +84,8 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       const payload: StorePayload = data.store && Object.keys(data.store).length > 0 
         ? data.store 
         : { presentations: [] };
-      
+
+      // Safety initialization
       setPresentations(payload.presentations || []);
     } catch (err: any) {
       showError(err.message || 'Failed to fetch store');
