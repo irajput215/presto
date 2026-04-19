@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "tsc": "tsc -b --noEmit",
-    "test": "vitest run",
+    "test": "cypress open",
+    "test:cli": "cypress run",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -31,6 +32,7 @@
     "@vitejs/plugin-react": "^5.1.1",
     "@vitest/ui": "^4.0.18",
     "autoprefixer": "^10.5.0",
+    "cypress": "^15.14.0",
     "eslint": "^9.39.2",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
