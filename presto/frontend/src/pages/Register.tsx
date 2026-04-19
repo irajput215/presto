@@ -16,7 +16,7 @@ export const Register: React.FC = () => {
   const { login } = useAuth();
   const { showError, clearErrors } = useError();
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       showError("Passwords do not match");
