@@ -1,5 +1,13 @@
 # UI Testing Rationale
 
+
+# How to Run
+
+Make sure your backend server and your frontend Vite server are both currently running.
+In a new terminal inside the presto/frontend directory, simply run:
+npm run test
+A Cypress window will pop up. Select "E2E Testing" and click on either happy_path.cy.js or alternative_path.cy.js to watch the robotic test user zip through your application!
+
 ## Alternative Path
 
 For the second test path (`alternative_path.cy.js`), the goal was to verify the actual feature capabilities inside the presentation editor, expanding upon the administrative flow covered in the happy path. 
