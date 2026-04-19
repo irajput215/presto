@@ -441,6 +441,12 @@ export const EditPresentation: React.FC = () => {
     setIsHistoryOpen(false);
   };
 
+  /** Deletes a specific history snapshot */
+  const handleDeleteHistory = async (entryId: string) => {
+    const updatedHistory = (presentation.history || []).filter(h => h.id !== entryId);
+    await updatePresentation(presentation.id, { history: updatedHistory });
+  };
+
   /** Human friendly date formatting */
   const formatHistoryTime = (timestamp: number) =>
     new Intl.DateTimeFormat(undefined, {
@@ -829,9 +835,14 @@ export const EditPresentation: React.FC = () => {
                         {entry.slides.length} slide{entry.slides.length === 1 ? '' : 's'} saved
                       </div>
                     </div>
-                    <Button type="button" variant="secondary" onClick={() => handleRestoreHistory(entry)}>
-                      Restore
-                    </Button>
+                    <div className="flex flex-col gap-2">
+                      <Button type="button" variant="secondary" onClick={() => handleRestoreHistory(entry)}>
+                        Restore
+                      </Button>
+                      <Button type="button" variant="danger" onClick={() => handleDeleteHistory(entry.id)}>
+                        Delete
+                      </Button>
+                    </div>
                   </div>
                   <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
                     {entry.slides.slice(0, 6).map((slide, index) => (
