@@ -32,15 +32,36 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 /**
+ * Higher-order component to force light mode on public auth/landing pages.
+ */
+const PublicLightRoute = ({ children }: { children: React.ReactNode }) => {
+  useEffect(() => {
+    // Force light mode when entering this route
+    document.documentElement.classList.remove('dark');
+    return () => {
+      // Re-apply if returning to protected routes that expect it
+      if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    };
+  }, []);
+  return <>{children}</>;
+};
+
+/**
  * Main application component that sets up routing and global providers.
  */
 function App() {
   // Initialize dark mode theme globally on app load
   useEffect(() => {
-    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+    // We only apply this automatically if we are not on a public light route
+    const isPublicLightRoute = ['/', '/login', '/register'].includes(window.location.pathname);
+    if (!isPublicLightRoute) {
+      if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
     }
   }, []);
 
@@ -52,9 +73,9 @@ function App() {
             <ErrorPopup />
             <Routes>
               {/* Publicly accessible pages */}
-              <Route path="/" element={<Landing />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
+              <Route path="/" element={<PublicLightRoute><Landing /></PublicLightRoute>} />
+              <Route path="/login" element={<PublicLightRoute><Login /></PublicLightRoute>} />
+              <Route path="/register" element={<PublicLightRoute><Register /></PublicLightRoute>} />
               
               {/* Presentation preview (publicly viewable by link) */}
               <Route path="/presentation/:id/preview" element={<PreviewPresentation />} />
